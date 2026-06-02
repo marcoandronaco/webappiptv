@@ -35,10 +35,20 @@
                 </a>
 
                 <a href="{{ route('customer.playlists.create') }}"
-                   class="w-[clamp(54px,10vmin,86px)] h-[clamp(42px,8vmin,66px)]
-                   rounded-[clamp(12px,2vmin,20px)] bg-white/10 hover:bg-white/15 border border-white/10
-                   flex items-center justify-center text-[clamp(30px,7vmin,52px)] font-light shadow-2xl transition">
-                    +
+                    class="h-[clamp(42px,8vmin,66px)] px-[clamp(18px,4vmin,38px)]
+                    rounded-[clamp(12px,2vmin,20px)]
+                    bg-gradient-to-r from-violet-500 to-pink-500
+                    hover:brightness-110 border border-white/10
+                    flex items-center justify-center gap-[clamp(8px,1.6vmin,16px)]
+                    text-white font-extrabold shadow-2xl transition">
+
+                    {{-- <span class="text-[clamp(24px,5vmin,42px)] leading-none font-light">
+                        +
+                    </span> --}}
+
+                    <span class="text-[clamp(12px,2.3vmin,22px)] whitespace-nowrap">
+                        Aggiungi playlist
+                    </span>
                 </a>
             </div>
         </header>

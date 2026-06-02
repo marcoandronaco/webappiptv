@@ -28,7 +28,7 @@
 <div class="relative h-full w-full overflow-y-auto overflow-x-hidden iptv-scroll
     px-[clamp(18px,4vmin,80px)]
     py-[clamp(14px,3vmin,46px)]
-    pb-[clamp(120px,20vmin,190px)]">
+    pb-[clamp(0px,20vmin,190px)]">
 
     {{-- DECORAZIONI SFONDO --}}
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -81,7 +81,7 @@
               bg-white/[0.055] backdrop-blur-xl shadow-2xl
               p-[clamp(18px,4vmin,46px)]
               flex flex-col justify-between
-              min-h-[clamp(520px,72vmin,760px)]">
+              min-h-[clamp(400px,72vmin,760px)]">
 
             @csrf
 
