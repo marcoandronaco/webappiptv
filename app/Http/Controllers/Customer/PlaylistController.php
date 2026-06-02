@@ -42,7 +42,7 @@ class PlaylistController extends Controller
 
         return redirect()
             ->route('customer.playlists.index')
-            ->with('success', 'Playlist salvata. Importazione canali avviata in background.');
+            ->with('success', 'Playlist salvata. Importazione Live TV, Film e Serie avviata in background.');
     }
 
     public function edit(Playlist $playlist)
@@ -71,7 +71,7 @@ class PlaylistController extends Controller
 
         return redirect()
             ->route('customer.playlists.index')
-            ->with('success', 'Playlist modificata. Importazione canali riavviata in background.');
+            ->with('success', 'Playlist modificata. Importazione Live TV, Film e Serie riavviata in background.');
     }
 
     public function import(Playlist $playlist)

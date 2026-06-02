@@ -11,16 +11,23 @@ class Channel extends Model
         'playlist_id',
         'name',
         'type',
+        'is_series_parent',
         'logo',
         'group_title',
         'tvg_id',
         'stream_url',
         'stream_id',
+        'series_id',
+        'season_number',
+        'episode_number',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_series_parent' => 'boolean',
+        'season_number' => 'integer',
+        'episode_number' => 'integer',
     ];
 
     public function playlist(): BelongsTo

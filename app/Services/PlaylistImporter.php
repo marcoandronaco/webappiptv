@@ -15,8 +15,8 @@ class PlaylistImporter
 
     public function import(Playlist $playlist): int
     {
-        ini_set('memory_limit', '1024M');
-        set_time_limit(900);
+        ini_set('memory_limit', '2048M');
+        set_time_limit(3600);
 
         $playlist->channels()->delete();
 
@@ -29,8 +29,8 @@ class PlaylistImporter
 
     private function importM3u(Playlist $playlist): int
     {
-        ini_set('memory_limit', '1024M');
-        set_time_limit(900);
+        ini_set('memory_limit', '2048M');
+        set_time_limit(3600);
 
         if (!$playlist->m3u_url) {
             throw new RuntimeException('URL M3U mancante.');
@@ -62,11 +62,7 @@ class PlaylistImporter
             while (!$file->eof()) {
                 $line = trim((string) $file->fgets());
 
-                if ($line === '') {
-                    continue;
-                }
-
-                if (str_starts_with($line, '#EXTM3U')) {
+                if ($line === '' || str_starts_with($line, '#EXTM3U')) {
                     continue;
                 }
 
@@ -88,11 +84,15 @@ class PlaylistImporter
                         'playlist_id' => $playlist->id,
                         'name' => Str::limit($name, 250, ''),
                         'type' => $this->detectType($group, $name, $line),
+                        'is_series_parent' => false,
                         'logo' => $this->limitNullable($current['logo'] ?? null),
                         'group_title' => $this->limitNullable($group),
                         'tvg_id' => $this->limitNullable($current['tvg_id'] ?? null),
                         'stream_url' => $line,
                         'stream_id' => null,
+                        'series_id' => null,
+                        'season_number' => null,
+                        'episode_number' => null,
                         'is_active' => true,
                         'created_at' => $now,
                         'updated_at' => $now,
@@ -126,8 +126,8 @@ class PlaylistImporter
 
     private function importXtream(Playlist $playlist): int
     {
-        ini_set('memory_limit', '1024M');
-        set_time_limit(900);
+        ini_set('memory_limit', '2048M');
+        set_time_limit(3600);
 
         if (!$playlist->xtream_host || !$playlist->xtream_username || !$playlist->xtream_password) {
             throw new RuntimeException('Dati Xtream mancanti.');
@@ -158,25 +158,15 @@ class PlaylistImporter
             throw new RuntimeException('Credenziali Xtream non valide.');
         }
 
-        /*
-         * Qui leggiamo tutte le categorie Xtream.
-         * Questo risolve il problema della pagina che mostra solo "Tutte".
-         */
-        $liveCategories = $this->getXtreamCategories(
-            host: $host,
-            username: $username,
-            password: $password,
-            action: 'get_live_categories'
-        );
-
-        $vodCategories = $this->getXtreamCategories(
-            host: $host,
-            username: $username,
-            password: $password,
-            action: 'get_vod_categories'
-        );
+        $liveCategories = $this->getXtreamCategories($host, $username, $password, 'get_live_categories');
+        $vodCategories = $this->getXtreamCategories($host, $username, $password, 'get_vod_categories');
+        $seriesCategories = $this->getXtreamCategories($host, $username, $password, 'get_series_categories');
 
         $count = 0;
+
+        $playlist->update([
+            'import_message' => 'Importazione Live TV...',
+        ]);
 
         $count += $this->importXtreamSection(
             playlist: $playlist,
@@ -188,6 +178,10 @@ class PlaylistImporter
             categories: $liveCategories
         );
 
+        $playlist->update([
+            'import_message' => 'Importazione Film...',
+        ]);
+
         $count += $this->importXtreamSection(
             playlist: $playlist,
             host: $host,
@@ -198,13 +192,20 @@ class PlaylistImporter
             categories: $vodCategories
         );
 
-        /*
-         * Le serie le lasciamo fuori per ora per evitare blocchi.
-         * Dopo possiamo fare importazione separata solo delle Serie.
-         */
+        $playlist->update([
+            'import_message' => 'Importazione catalogo Serie...',
+        ]);
+
+        $count += $this->importXtreamSeriesCatalog(
+            playlist: $playlist,
+            host: $host,
+            username: $username,
+            password: $password,
+            categories: $seriesCategories
+        );
 
         if ($count === 0) {
-            throw new RuntimeException('Nessun contenuto TV o Film trovato tramite API Xtream.');
+            throw new RuntimeException('Nessun contenuto trovato tramite API Xtream.');
         }
 
         $playlist->update([
@@ -261,8 +262,8 @@ class PlaylistImporter
         string $type,
         array $categories = []
     ): int {
-        ini_set('memory_limit', '1024M');
-        set_time_limit(900);
+        ini_set('memory_limit', '2048M');
+        set_time_limit(3600);
 
         $response = Http::connectTimeout(10)
             ->timeout(120)
@@ -309,7 +310,7 @@ class PlaylistImporter
                 $streamUrl = $host . '/live/' .
                     rawurlencode($username) . '/' .
                     rawurlencode($password) . '/' .
-                    $streamId . '.m3u8';
+                    $streamId . '.ts';
 
                 $name = $stream['name'] ?? 'Canale senza nome';
             } else {
@@ -327,11 +328,15 @@ class PlaylistImporter
                 'playlist_id' => $playlist->id,
                 'name' => Str::limit($name, 250, ''),
                 'type' => $type,
+                'is_series_parent' => false,
                 'logo' => $this->limitNullable($stream['stream_icon'] ?? null),
                 'group_title' => $this->limitNullable($group),
                 'tvg_id' => null,
                 'stream_url' => $streamUrl,
                 'stream_id' => $this->limitNullable((string) $streamId),
+                'series_id' => null,
+                'season_number' => null,
+                'episode_number' => null,
                 'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -347,6 +352,211 @@ class PlaylistImporter
         return $count;
     }
 
+    private function importXtreamSeriesCatalog(
+        Playlist $playlist,
+        string $host,
+        string $username,
+        string $password,
+        array $categories = []
+    ): int {
+        ini_set('memory_limit', '2048M');
+        set_time_limit(3600);
+
+        $response = Http::connectTimeout(10)
+            ->timeout(120)
+            ->get($host . '/player_api.php', [
+                'username' => $username,
+                'password' => $password,
+                'action' => 'get_series',
+            ]);
+
+        if (!$response->successful()) {
+            return 0;
+        }
+
+        $seriesList = $response->json();
+
+        if (!is_array($seriesList)) {
+            return 0;
+        }
+
+        $buffer = [];
+        $count = 0;
+        $now = now();
+
+        foreach ($seriesList as $serie) {
+            $seriesId = $serie['series_id'] ?? null;
+
+            if (!$seriesId) {
+                continue;
+            }
+
+            $categoryId = isset($serie['category_id']) ? (string) $serie['category_id'] : null;
+
+            $group = $serie['category_name'] ?? null;
+
+            if (!$group && $categoryId && isset($categories[$categoryId])) {
+                $group = $categories[$categoryId];
+            }
+
+            if (!$group) {
+                $group = 'Serie';
+            }
+
+            $buffer[] = [
+                'playlist_id' => $playlist->id,
+                'name' => Str::limit($serie['name'] ?? 'Serie senza nome', 250, ''),
+                'type' => 'serie',
+                'is_series_parent' => true,
+                'logo' => $this->limitNullable($serie['cover'] ?? null),
+                'group_title' => $this->limitNullable($group),
+                'tvg_id' => null,
+                'stream_url' => '#',
+                'stream_id' => $this->limitNullable((string) $seriesId),
+                'series_id' => $this->limitNullable((string) $seriesId),
+                'season_number' => null,
+                'episode_number' => null,
+                'is_active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+
+            if (count($buffer) >= $this->chunkSize) {
+                $count += $this->insertChunk($buffer);
+            }
+        }
+
+        $count += $this->insertChunk($buffer);
+
+        return $count;
+    }
+
+    public function importEpisodesForSeries(Channel $seriesChannel): int
+    {
+        ini_set('memory_limit', '2048M');
+        set_time_limit(900);
+
+        if (!$seriesChannel->is_series_parent || !$seriesChannel->series_id) {
+            throw new RuntimeException('Questa non è una serie valida.');
+        }
+
+        $playlist = $seriesChannel->playlist;
+
+        if (!$playlist || $playlist->type !== 'xtream') {
+            throw new RuntimeException('Playlist Xtream non valida.');
+        }
+
+        $host = rtrim($playlist->xtream_host, '/');
+        $username = $playlist->xtream_username;
+        $password = $playlist->xtream_password;
+
+        Channel::where('playlist_id', $playlist->id)
+            ->where('type', 'serie')
+            ->where('is_series_parent', false)
+            ->where('series_id', $seriesChannel->series_id)
+            ->delete();
+
+        $response = Http::connectTimeout(10)
+            ->timeout(120)
+            ->get($host . '/player_api.php', [
+                'username' => $username,
+                'password' => $password,
+                'action' => 'get_series_info',
+                'series_id' => $seriesChannel->series_id,
+            ]);
+
+        if (!$response->successful()) {
+            throw new RuntimeException('Impossibile leggere gli episodi della serie.');
+        }
+
+        $info = $response->json();
+
+        if (!is_array($info)) {
+            throw new RuntimeException('Risposta episodi non valida.');
+        }
+
+        $episodes = $info['episodes'] ?? [];
+
+        if (!is_array($episodes)) {
+            throw new RuntimeException('Nessun episodio trovato.');
+        }
+
+        $buffer = [];
+        $count = 0;
+        $now = now();
+
+        foreach ($episodes as $seasonNumber => $seasonEpisodes) {
+            if (isset($seasonEpisodes['id'])) {
+                $seasonEpisodes = [$seasonEpisodes];
+            }
+
+            if (!is_array($seasonEpisodes)) {
+                continue;
+            }
+
+            foreach ($seasonEpisodes as $episode) {
+                $episodeId = $episode['id'] ?? null;
+
+                if (!$episodeId) {
+                    continue;
+                }
+
+                $episodeTitle = $episode['title'] ?? 'Episodio';
+                $episodeNumber = $episode['episode_num'] ?? null;
+                $extension = $episode['container_extension'] ?? 'mp4';
+
+                $seasonNumberInt = is_numeric($seasonNumber) ? (int) $seasonNumber : 1;
+                $episodeNumberInt = is_numeric($episodeNumber) ? (int) $episodeNumber : 1;
+
+                $seasonLabel = str_pad((string) $seasonNumberInt, 2, '0', STR_PAD_LEFT);
+                $episodeLabel = str_pad((string) $episodeNumberInt, 2, '0', STR_PAD_LEFT);
+
+                $name = $seriesChannel->name . ' - S' . $seasonLabel . 'E' . $episodeLabel . ' - ' . $episodeTitle;
+
+                $streamUrl = $host . '/series/' .
+                    rawurlencode($username) . '/' .
+                    rawurlencode($password) . '/' .
+                    $episodeId . '.' . $extension;
+
+                $episodeLogo = null;
+
+                if (isset($episode['info']) && is_array($episode['info'])) {
+                    $episodeLogo = $episode['info']['movie_image'] ?? null;
+                }
+
+                $buffer[] = [
+                    'playlist_id' => $playlist->id,
+                    'name' => Str::limit($name, 250, ''),
+                    'type' => 'serie',
+                    'is_series_parent' => false,
+                    'logo' => $this->limitNullable($episodeLogo ?? $seriesChannel->logo),
+                    'group_title' => $this->limitNullable($seriesChannel->group_title ?: 'Serie'),
+                    'tvg_id' => null,
+                    'stream_url' => $streamUrl,
+                    'stream_id' => $this->limitNullable((string) $episodeId),
+                    'series_id' => $this->limitNullable((string) $seriesChannel->series_id),
+                    'season_number' => $seasonNumberInt,
+                    'episode_number' => $episodeNumberInt,
+                    'is_active' => true,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+
+                if (count($buffer) >= $this->chunkSize) {
+                    $count += $this->insertChunk($buffer);
+                }
+            }
+        }
+
+        $count += $this->insertChunk($buffer);
+
+        if ($count === 0) {
+            throw new RuntimeException('Nessun episodio importato.');
+        }
+
+        return $count;
+    }
+
     private function insertChunk(array &$buffer): int
     {
         if (count($buffer) === 0) {
@@ -356,7 +566,6 @@ class PlaylistImporter
         Channel::insert($buffer);
 
         $inserted = count($buffer);
-
         $buffer = [];
 
         return $inserted;
