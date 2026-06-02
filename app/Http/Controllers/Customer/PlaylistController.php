@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ImportPlaylistJob;
 use App\Models\Playlist;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -13,7 +14,10 @@ class PlaylistController extends Controller
     {
         $playlists = Playlist::withCount('channels')->latest()->get();
 
-        return view('customer.playlists.index', compact('playlists'));
+        return view('customer.playlists.index', [
+            'playlists' => $playlists,
+            'deviceCode' => 'DEVICE-XXXX-XXXX',
+        ]);
     }
 
     public function create()
@@ -21,6 +25,7 @@ class PlaylistController extends Controller
         return view('customer.playlists.create', [
             'playlist' => new Playlist(),
             'mode' => 'create',
+            'deviceCode' => 'DEVICE-XXXX-XXXX',
         ]);
     }
 
@@ -28,11 +33,16 @@ class PlaylistController extends Controller
     {
         $data = $this->validatePlaylist($request);
 
-        Playlist::create($data);
+        $playlist = Playlist::create(array_merge($data, [
+            'import_status' => 'queued',
+            'import_message' => 'Importazione in coda.',
+        ]));
+
+        ImportPlaylistJob::dispatch($playlist->id);
 
         return redirect()
             ->route('customer.playlists.index')
-            ->with('success', 'Playlist aggiunta correttamente.');
+            ->with('success', 'Playlist salvata. Importazione canali avviata in background.');
     }
 
     public function edit(Playlist $playlist)
@@ -40,6 +50,7 @@ class PlaylistController extends Controller
         return view('customer.playlists.create', [
             'playlist' => $playlist,
             'mode' => 'edit',
+            'deviceCode' => 'DEVICE-XXXX-XXXX',
         ]);
     }
 
@@ -51,11 +62,30 @@ class PlaylistController extends Controller
             unset($data['xtream_password']);
         }
 
-        $playlist->update($data);
+        $playlist->update(array_merge($data, [
+            'import_status' => 'queued',
+            'import_message' => 'Importazione in coda.',
+        ]));
+
+        ImportPlaylistJob::dispatch($playlist->id);
 
         return redirect()
             ->route('customer.playlists.index')
-            ->with('success', 'Playlist modificata correttamente.');
+            ->with('success', 'Playlist modificata. Importazione canali riavviata in background.');
+    }
+
+    public function import(Playlist $playlist)
+    {
+        $playlist->update([
+            'import_status' => 'queued',
+            'import_message' => 'Importazione in coda.',
+        ]);
+
+        ImportPlaylistJob::dispatch($playlist->id);
+
+        return redirect()
+            ->route('customer.playlists.index')
+            ->with('success', 'Importazione playlist avviata.');
     }
 
     public function destroy(Playlist $playlist)
@@ -93,10 +123,12 @@ class PlaylistController extends Controller
         }
 
         if ($data['type'] === 'xtream') {
+            $passwordRequired = !$playlist || !$playlist->exists || $playlist->type !== 'xtream';
+
             $request->validate([
                 'xtream_host' => ['required', 'url'],
                 'xtream_username' => ['required', 'string', 'max:255'],
-                'xtream_password' => [$playlist ? 'nullable' : 'required', 'string', 'max:255'],
+                'xtream_password' => [$passwordRequired ? 'required' : 'nullable', 'string', 'max:255'],
             ]);
 
             $data['m3u_url'] = null;

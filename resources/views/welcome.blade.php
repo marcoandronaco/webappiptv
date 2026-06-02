@@ -126,7 +126,7 @@
                   style="grid-template-columns: 1.25fr 0.95fr 0.95fr; grid-template-rows: 1fr clamp(42px, 8vmin, 86px);">
 
                 {{-- TV DAL VIVO --}}
-                <a href="{{ url('/cliente/player?tipo=live') }}"
+                <a href="{{ route('customer.channels.index', ['tipo' => 'live']) }}"
                    class="group relative row-span-2 overflow-hidden flex flex-col items-center justify-center
                    rounded-[clamp(12px,2.5vmin,28px)]
                    bg-gradient-to-br from-cyan-300 via-blue-500 to-blue-800
@@ -153,7 +153,7 @@
                 </a>
 
                 {{-- FILM --}}
-                <a href="{{ url('/cliente/player?tipo=film') }}"
+                <a href="{{ route('customer.channels.index', ['tipo' => 'film']) }}"
                    class="group relative overflow-hidden flex flex-col items-center justify-center
                    rounded-[clamp(12px,2.5vmin,28px)]
                    bg-gradient-to-br from-pink-500 via-red-500 to-orange-400
@@ -178,7 +178,7 @@
                 </a>
 
                 {{-- SERIE --}}
-                <a href="{{ url('/cliente/player?tipo=serie') }}"
+                <a href="{{ route('customer.channels.index', ['tipo' => 'serie']) }}"
                    class="group relative overflow-hidden flex flex-col items-center justify-center
                    rounded-[clamp(12px,2.5vmin,28px)]
                    bg-gradient-to-br from-purple-500 via-indigo-500 to-sky-400

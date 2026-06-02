@@ -6,12 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-       Schema::create('channels', function (Blueprint $table) {
+        Schema::create('channels', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('playlist_id')
@@ -20,6 +17,7 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('type')->default('live');
+            // live, film, serie
 
             $table->string('logo')->nullable();
             $table->string('group_title')->nullable();
@@ -34,9 +32,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('channels');

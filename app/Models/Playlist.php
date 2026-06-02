@@ -16,12 +16,21 @@ class Playlist extends Model
         'xtream_password',
         'is_active',
         'last_used_at',
+
+        'import_status',
+        'import_message',
+        'imported_channels_count',
+        'import_started_at',
+        'import_finished_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'last_used_at' => 'datetime',
         'xtream_password' => 'encrypted',
+
+        'import_started_at' => 'datetime',
+        'import_finished_at' => 'datetime',
     ];
 
     public function channels(): HasMany
