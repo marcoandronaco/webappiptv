@@ -234,6 +234,11 @@
                             <span class="text-[clamp(14px,2vmin,22px)] font-black">Preferiti</span>
                         </div>
 
+                        <a href="{{ url('/') }}"
+                           data-preserve-scroll
+                           class="rounded-xl bg-violet-700 px-4 py-2 text-sm font-black hover:bg-violet-600">
+                            Home
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-[1fr_120px] gap-4">
@@ -437,7 +442,7 @@
                    playsinline
                    preload="auto"></video>
 
-            {{-- TOP BAR: pointer-events-none per non bloccare i controlli video --}}
+            {{-- TOP BAR --}}
             <div id="fullscreen-top-bar"
                  class="pointer-events-none absolute left-0 right-0 top-0 z-20 bg-gradient-to-b from-black/85 to-transparent p-6 transition-opacity duration-300">
                 <div class="flex items-center justify-between gap-4">
@@ -464,7 +469,7 @@
                 </div>
             </div>
 
-            {{-- BOTTOM BAR: pointer-events-none per lasciare cliccabile volume/fullscreen nativo --}}
+            {{-- BOTTOM BAR --}}
             <div id="fullscreen-bottom-bar"
                  class="pointer-events-none absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/85 to-transparent p-6 transition-opacity duration-300">
                 <div class="flex items-center justify-between gap-4">
@@ -478,6 +483,10 @@
                         </div>
                     </div>
 
+                    <a href="{{ url('/') }}"
+                       class="pointer-events-auto rounded-2xl bg-violet-700 px-5 py-3 text-sm font-black hover:bg-violet-600 md:text-base">
+                        Home
+                    </a>
                 </div>
             </div>
         </div>
@@ -719,7 +728,7 @@
 
         @else
 
-            {{-- DETTAGLIO SERIE SENZA RIQUADRO PLAYER --}}
+            {{-- DETTAGLIO SERIE --}}
             <div class="relative h-full w-full overflow-hidden">
 
                 @if($background)
@@ -780,7 +789,6 @@
                         </div>
                     </div>
 
-                    {{-- STAGIONI --}}
                     <div class="mt-12">
                         <div class="mb-4 text-[clamp(24px,3vmin,40px)] font-black">
                             Stagioni
@@ -810,7 +818,6 @@
                         </div>
                     </div>
 
-                    {{-- EPISODI --}}
                     <div class="mt-10">
                         <div class="mb-4 text-[clamp(22px,2.8vmin,36px)] font-black">
                             Episodi
@@ -875,47 +882,6 @@
                         </div>
                     </div>
 
-                    {{-- CAST & CREW --}}
-                    @if($castItems->count())
-                        <div class="mt-12">
-                            <div class="mb-5 text-[clamp(22px,2.8vmin,36px)] font-black">
-                                Cast &amp; Crew
-                            </div>
-
-                            <div class="iptv-panel-scroll overflow-x-auto pb-3">
-                                <div class="flex gap-6">
-                                    @foreach($castItems as $person)
-                                        @php
-                                            $personName = is_array($person) ? ($person['name'] ?? 'Cast') : $person;
-                                            $personPhoto = is_array($person) ? ($person['photo'] ?? $person['image'] ?? null) : null;
-                                            $initials = collect(explode(' ', $personName))
-                                                ->filter()
-                                                ->take(2)
-                                                ->map(fn ($part) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($part, 0, 1)))
-                                                ->implode('');
-                                        @endphp
-
-                                        <div class="min-w-[150px] text-center">
-                                            <div class="mx-auto flex h-[150px] w-[150px] items-center justify-center overflow-hidden rounded-full border-2 border-white/25 bg-black/45 shadow-2xl">
-                                                @if($personPhoto)
-                                                    <img src="{{ $personPhoto }}"
-                                                         alt="{{ $personName }}"
-                                                         class="h-full w-full object-cover">
-                                                @else
-                                                    <span class="text-4xl font-black text-white/85">{{ $initials }}</span>
-                                                @endif
-                                            </div>
-
-                                            <div class="mt-3 text-xl font-medium">
-                                                {{ $personName }}
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
                 </div>
             </div>
 
@@ -946,9 +912,32 @@ document.addEventListener('DOMContentLoaded', function () {
     function detectFormat(url) {
         const clean = url.split('?')[0].toLowerCase();
 
-        if (clean.endsWith('.m3u8')) return 'hls';
-        if (clean.endsWith('.ts') || clean.includes('/live/') || clean.includes('/series/')) return 'mpegts';
-        if (clean.endsWith('.mp4') || clean.endsWith('.m4v') || clean.endsWith('.webm') || clean.endsWith('.mkv')) return 'native';
+        if (clean.endsWith('.m3u8')) {
+            return 'hls';
+        }
+
+        /*
+         * Film e serie Xtream sono quasi sempre file VOD.
+         * Non devono diventare MPEG-TS solo perché l'URL contiene /series/ o /movie/.
+         */
+        if (
+            clean.endsWith('.mp4') ||
+            clean.endsWith('.m4v') ||
+            clean.endsWith('.mov') ||
+            clean.endsWith('.webm') ||
+            clean.endsWith('.mkv') ||
+            clean.includes('/movie/') ||
+            clean.includes('/series/')
+        ) {
+            return 'native';
+        }
+
+        /*
+         * MPEG-TS solo per live .ts oppure URL live.
+         */
+        if (clean.endsWith('.ts') || clean.includes('/live/')) {
+            return 'mpegts';
+        }
 
         return 'native';
     }
@@ -1025,11 +1014,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function playNative(url) {
         if (formatLabel) {
-            formatLabel.textContent = 'Nativo';
+            formatLabel.textContent = 'VOD';
         }
 
         video.src = url;
-        video.play().catch(() => {});
+        video.load();
+
+        video.addEventListener('loadedmetadata', function () {
+            video.play().catch(() => {});
+        }, { once: true });
+
+        video.addEventListener('canplay', function () {
+            video.play().catch(() => {});
+        }, { once: true });
+
+        video.addEventListener('error', function () {
+            if (formatLabel) {
+                formatLabel.textContent = 'Formato non supportato';
+            }
+
+            console.error('Errore riproduzione VOD:', {
+                url: url,
+                error: video.error
+            });
+        }, { once: true });
     }
 
     const format = detectFormat(streamUrl);
