@@ -7,11 +7,12 @@ use App\Models\Channel;
 use App\Services\PlaylistImporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 class ChannelController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, PlaylistImporter $importer)
     {
         $type = $request->query('tipo', 'live');
 
@@ -19,10 +20,16 @@ class ChannelController extends Controller
             $type = 'live';
         }
 
-        $search = $request->query('search');
-        $group = $request->query('group');
+        $category = $request->query('category');
+        $categorySearch = $request->query('category_search');
+        $channelSearch = $request->query('channel_search');
+        $selectedChannelId = $request->query('channel');
+        $selectedEpisodeId = $request->query('episode');
+        $play = $request->boolean('play');
 
-        $query = Channel::query()
+        $hasChannelNumberColumn = Schema::hasColumn('channels', 'channel_number');
+
+        $baseQuery = Channel::query()
             ->with('playlist')
             ->where('type', $type)
             ->where('is_active', true)
@@ -31,54 +38,171 @@ class ChannelController extends Controller
             });
 
         if ($type === 'serie') {
-            $query->where(function ($q) {
+            $baseQuery->where(function ($q) {
                 $q->where('is_series_parent', true)
                     ->orWhereNull('series_id');
             });
         }
 
-        if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
+        $totalChannels = (clone $baseQuery)->count();
 
-        if ($group) {
-            $query->where('group_title', $group);
-        }
-
-        $channels = $query
-            ->orderBy('group_title')
-            ->orderBy('name')
-            ->simplePaginate(30)
-            ->withQueryString();
-
-        $groupsQuery = Channel::query()
-            ->where('type', $type)
-            ->where('is_active', true)
-            ->whereHas('playlist', function ($q) {
-                $q->where('is_active', true);
-            })
+        $categoriesQuery = (clone $baseQuery)
             ->whereNotNull('group_title')
             ->where('group_title', '!=', '');
 
-        if ($type === 'serie') {
-            $groupsQuery->where(function ($q) {
-                $q->where('is_series_parent', true)
-                    ->orWhereNull('series_id');
-            });
+        if ($categorySearch) {
+            $categoriesQuery->where('group_title', 'like', '%' . $categorySearch . '%');
         }
 
-        $groups = $groupsQuery
+        $categories = $categoriesQuery
             ->select('group_title', DB::raw('count(*) as total'))
             ->groupBy('group_title')
             ->orderBy('group_title')
             ->get();
 
+        $channelsQuery = clone $baseQuery;
+
+        if ($category) {
+            $channelsQuery->where('group_title', $category);
+        }
+
+        if ($channelSearch) {
+            $channelsQuery->where('name', 'like', '%' . $channelSearch . '%');
+        }
+
+        if ($hasChannelNumberColumn) {
+            $channelsQuery
+                ->orderByRaw('channel_number IS NULL')
+                ->orderBy('channel_number');
+        }
+
+        $channels = $channelsQuery
+            ->orderBy('name')
+            ->simplePaginate($type === 'live' ? 90 : 60)
+            ->withQueryString();
+
+        $selectedChannel = null;
+
+        if ($selectedChannelId) {
+            $selectedChannel = Channel::query()
+                ->with('playlist')
+                ->where('is_active', true)
+                ->where('type', $type)
+                ->find($selectedChannelId);
+        }
+
+        if ($type === 'live' && !$selectedChannel && $channels->count()) {
+            $selectedChannel = $channels->first();
+        }
+
+        $playableChannel = null;
+        $selectedSeries = null;
+        $episodesBySeason = collect();
+        $seriesImportError = null;
+        $seriesImportedCount = 0;
+
+        if ($type === 'live') {
+            $playableChannel = $selectedChannel;
+        }
+
+        if ($type === 'film') {
+            if ($selectedChannel && $play) {
+                $playableChannel = $selectedChannel;
+            }
+        }
+
+        if ($type === 'serie' && $selectedChannel) {
+            if ($selectedChannel->is_series_parent) {
+                $selectedSeries = $selectedChannel;
+            } elseif ($selectedChannel->series_id) {
+                $selectedSeries = Channel::query()
+                    ->where('playlist_id', $selectedChannel->playlist_id)
+                    ->where('type', 'serie')
+                    ->where('is_series_parent', true)
+                    ->where('series_id', $selectedChannel->series_id)
+                    ->first();
+
+                if ($play) {
+                    $playableChannel = $selectedChannel;
+                }
+            } else {
+                if ($play) {
+                    $playableChannel = $selectedChannel;
+                }
+            }
+
+            if ($selectedSeries && $selectedSeries->series_id) {
+                $episodesExist = Channel::query()
+                    ->where('playlist_id', $selectedSeries->playlist_id)
+                    ->where('type', 'serie')
+                    ->where('is_series_parent', false)
+                    ->where('series_id', $selectedSeries->series_id)
+                    ->where('is_active', true)
+                    ->exists();
+
+                if (!$episodesExist) {
+                    try {
+                        $seriesImportedCount = $importer->importEpisodesForSeries($selectedSeries);
+                    } catch (Throwable $e) {
+                        $seriesImportError = $e->getMessage();
+                    }
+                }
+
+                $episodesBySeason = Channel::query()
+                    ->where('playlist_id', $selectedSeries->playlist_id)
+                    ->where('type', 'serie')
+                    ->where('is_series_parent', false)
+                    ->where('series_id', $selectedSeries->series_id)
+                    ->where('is_active', true)
+                    ->orderBy('season_number')
+                    ->orderBy('episode_number')
+                    ->orderBy('name')
+                    ->get()
+                    ->groupBy(function ($episode) {
+                        return $episode->season_number ?: 1;
+                    });
+            }
+
+            if ($selectedEpisodeId) {
+                $episode = Channel::query()
+                    ->where('type', 'serie')
+                    ->where('is_series_parent', false)
+                    ->where('is_active', true)
+                    ->find($selectedEpisodeId);
+
+                if ($episode) {
+                    $playableChannel = $episode;
+                }
+            }
+        }
+
+        $epgProgrammes = collect();
+
+        if ($type === 'live' && $playableChannel && Schema::hasTable('epg_programmes')) {
+            $epgProgrammes = DB::table('epg_programmes')
+                ->where('channel_id', $playableChannel->id)
+                ->where('end_at', '>=', now()->subHours(2))
+                ->orderBy('start_at')
+                ->limit(14)
+                ->get();
+        }
+
         return view('customer.channels.index', [
-            'channels' => $channels,
-            'groups' => $groups,
             'type' => $type,
-            'search' => $search,
-            'group' => $group,
+            'category' => $category,
+            'categorySearch' => $categorySearch,
+            'channelSearch' => $channelSearch,
+            'categories' => $categories,
+            'channels' => $channels,
+            'selectedChannel' => $selectedChannel,
+            'playableChannel' => $playableChannel,
+            'selectedSeries' => $selectedSeries,
+            'episodesBySeason' => $episodesBySeason,
+            'seriesImportError' => $seriesImportError,
+            'seriesImportedCount' => $seriesImportedCount,
+            'epgProgrammes' => $epgProgrammes,
+            'totalChannels' => $totalChannels,
+            'play' => $play,
         ]);
     }
 
@@ -86,44 +210,6 @@ class ChannelController extends Controller
     {
         abort_unless($channel->is_active, 404);
         abort_unless($channel->playlist && $channel->playlist->is_active, 404);
-
-        if ($channel->type === 'serie' && $channel->is_series_parent) {
-            $importError = null;
-            $importedCount = 0;
-
-            $episodesQuery = Channel::query()
-                ->where('playlist_id', $channel->playlist_id)
-                ->where('type', 'serie')
-                ->where('is_series_parent', false)
-                ->where('series_id', $channel->series_id)
-                ->where('is_active', true);
-
-            if (!$episodesQuery->exists()) {
-                try {
-                    $importedCount = $importer->importEpisodesForSeries($channel);
-                } catch (Throwable $e) {
-                    $importError = $e->getMessage();
-                }
-            }
-
-            $episodes = Channel::query()
-                ->where('playlist_id', $channel->playlist_id)
-                ->where('type', 'serie')
-                ->where('is_series_parent', false)
-                ->where('series_id', $channel->series_id)
-                ->where('is_active', true)
-                ->orderBy('season_number')
-                ->orderBy('episode_number')
-                ->get()
-                ->groupBy('season_number');
-
-            return view('customer.channels.series', [
-                'series' => $channel,
-                'episodes' => $episodes,
-                'importError' => $importError,
-                'importedCount' => $importedCount,
-            ]);
-        }
 
         return view('customer.channels.show', [
             'channel' => $channel,

@@ -20,6 +20,9 @@ class Channel extends Model
         'series_id',
         'season_number',
         'episode_number',
+        'category_name',
+        'subcategory_name',
+        'channel_number',
         'is_active',
     ];
 
@@ -33,5 +36,10 @@ class Channel extends Model
     public function playlist(): BelongsTo
     {
         return $this->belongsTo(Playlist::class);
+    }
+
+    public function epgProgrammes()
+    {
+        return $this->hasMany(EpgProgramme::class)->orderBy('start_at');
     }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\StreamController;
 use App\Http\Controllers\Customer\ChannelController;
 use App\Http\Controllers\Customer\PlaylistController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Customer\TvPlayerController;
 
 Route::get('/', function () {
     return view('welcome', [
@@ -29,6 +30,9 @@ Route::prefix('cliente')->name('customer.')->group(function () {
 
     Route::get('/player/{channel}', [ChannelController::class, 'show'])
         ->name('channels.show');
+    
+    Route::get('/tv-player', [TvPlayerController::class, 'index'])
+        ->name('tv-player');
 });
 
 

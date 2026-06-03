@@ -310,7 +310,7 @@ class PlaylistImporter
                 $streamUrl = $host . '/live/' .
                     rawurlencode($username) . '/' .
                     rawurlencode($password) . '/' .
-                    $streamId . '.ts';
+                    $streamId . '.m3u8';
 
                 $name = $stream['name'] ?? 'Canale senza nome';
             } else {

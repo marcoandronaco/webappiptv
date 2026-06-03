@@ -8,19 +8,17 @@
         class="absolute inset-0 h-full w-full bg-black object-contain"
         autoplay
         playsinline
+        controls
         preload="auto">
     </video>
 
-    {{-- sfondo overlay --}}
     <div id="player-overlay"
-         class="absolute inset-0 z-20 bg-gradient-to-b from-black/70 via-slate-950/35 to-black/85 transition-opacity duration-300">
+         class="absolute inset-0 z-20 bg-gradient-to-b from-black/70 via-slate-950/30 to-black/85 transition-opacity duration-300">
 
-        {{-- TOP BAR --}}
         <div class="absolute left-0 right-0 top-0 flex items-start justify-between px-[clamp(28px,5vmin,80px)] pt-[clamp(22px,4vmin,54px)]">
-
             <div class="flex items-center gap-[clamp(18px,3vmin,34px)]">
                 <a href="{{ route('customer.channels.index', ['tipo' => $channel->type]) }}"
-                   class="flex h-[clamp(46px,7vmin,82px)] w-[clamp(46px,7vmin,82px)] items-center justify-center rounded-full bg-violet-700 text-[clamp(28px,4vmin,48px)] font-black shadow-2xl shadow-black/40 hover:bg-violet-600">
+                   class="flex h-[clamp(46px,7vmin,82px)] w-[clamp(46px,7vmin,82px)] items-center justify-center rounded-full bg-violet-700 text-[clamp(28px,4vmin,48px)] font-black shadow-2xl hover:bg-violet-600">
                     ←
                 </a>
 
@@ -30,55 +28,20 @@
                     </div>
 
                     <div class="mt-1 text-[clamp(22px,4vmin,44px)] font-black tracking-[0.18em] text-white drop-shadow-xl">
-                        {{ $channel->id }} - {{ strtoupper($channel->name) }}
+                        {{ strtoupper($channel->name) }}
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-[clamp(28px,5vmin,70px)] text-white">
-                <button type="button"
-                        class="text-[clamp(30px,5vmin,62px)] text-white/35">
-                    ⌁
-                </button>
-
-                <button type="button"
-                        id="lock-btn"
-                        class="text-[clamp(34px,5vmin,68px)]">
-                    🔓
-                </button>
-
+            <div class="flex items-center gap-[clamp(28px,5vmin,70px)]">
                 <button type="button"
                         id="settings-btn"
-                        class="flex h-[clamp(46px,7vmin,82px)] w-[clamp(46px,7vmin,82px)] items-center justify-center rounded-full bg-violet-700 text-[clamp(26px,4vmin,48px)] shadow-2xl shadow-black/40 hover:bg-violet-600">
+                        class="flex h-[clamp(46px,7vmin,82px)] w-[clamp(46px,7vmin,82px)] items-center justify-center rounded-full bg-violet-700 text-[clamp(26px,4vmin,48px)] shadow-2xl hover:bg-violet-600">
                     ⚙
                 </button>
             </div>
         </div>
 
-        {{-- LEFT BRIGHTNESS --}}
-        <div class="absolute left-[clamp(14px,3vmin,34px)] top-1/2 flex -translate-y-1/2 flex-col items-center gap-5">
-            <div class="text-[clamp(28px,5vmin,56px)]">☀</div>
-
-            <div class="relative h-[clamp(180px,34vmin,340px)] w-[clamp(12px,2vmin,22px)] rounded-full bg-white/35 overflow-hidden">
-                <div class="absolute bottom-0 left-0 right-0 h-[55%] rounded-full bg-white"></div>
-            </div>
-        </div>
-
-        {{-- RIGHT VOLUME --}}
-        <div class="absolute right-[clamp(14px,3vmin,34px)] top-1/2 flex -translate-y-1/2 flex-col items-center gap-5">
-            <button type="button"
-                    id="mute-btn"
-                    class="text-[clamp(30px,5vmin,60px)]">
-                🔊
-            </button>
-
-            <div class="relative h-[clamp(180px,34vmin,340px)] w-[clamp(12px,2vmin,22px)] rounded-full bg-white/35 overflow-hidden">
-                <div id="volume-level"
-                     class="absolute bottom-0 left-0 right-0 h-[70%] rounded-full bg-white"></div>
-            </div>
-        </div>
-
-        {{-- CENTRAL CONTROLS --}}
         <div class="absolute inset-0 flex items-center justify-center">
             <div class="flex items-center gap-[clamp(70px,12vmin,170px)] text-white drop-shadow-2xl">
                 <button type="button"
@@ -101,12 +64,22 @@
             </div>
         </div>
 
-        {{-- BOTTOM INFO --}}
+        <div class="absolute right-[clamp(14px,3vmin,34px)] top-1/2 flex -translate-y-1/2 flex-col items-center gap-5">
+            <button type="button"
+                    id="mute-btn"
+                    class="text-[clamp(30px,5vmin,60px)]">
+                🔊
+            </button>
+
+            <div class="relative h-[clamp(180px,34vmin,340px)] w-[clamp(12px,2vmin,22px)] rounded-full bg-white/35 overflow-hidden">
+                <div id="volume-level"
+                     class="absolute bottom-0 left-0 right-0 h-[70%] rounded-full bg-white"></div>
+            </div>
+        </div>
+
         <div class="absolute bottom-0 left-0 right-0 px-[clamp(28px,5vmin,80px)] pb-[clamp(20px,4vmin,48px)]">
 
             <div class="grid grid-cols-[auto_1fr_auto] items-end gap-[clamp(18px,3vmin,36px)]">
-
-                {{-- LOGO --}}
                 <div class="flex h-[clamp(58px,9vmin,100px)] w-[clamp(86px,13vmin,150px)] items-center justify-center rounded-xl bg-black/35">
                     @if($channel->logo)
                         <img src="{{ $channel->logo }}"
@@ -120,7 +93,6 @@
                     @endif
                 </div>
 
-                {{-- PROGRAMMI --}}
                 <div class="min-w-0">
                     <div class="flex items-center justify-between gap-4">
                         <div class="truncate text-[clamp(20px,3.5vmin,42px)] font-semibold">
@@ -133,8 +105,7 @@
                     </div>
 
                     <div class="mt-[clamp(8px,1.5vmin,18px)] h-[clamp(5px,0.9vmin,10px)] overflow-hidden rounded-full bg-white/30">
-                        <div id="fake-progress"
-                             class="h-full w-[62%] rounded-full bg-yellow-400"></div>
+                        <div class="h-full w-[62%] rounded-full bg-yellow-400"></div>
                     </div>
 
                     <div class="mt-[clamp(12px,2vmin,24px)] flex items-center justify-between gap-4">
@@ -142,13 +113,12 @@
                             Dopo: Programma successivo
                         </div>
 
-                        <div class="shrink-0 text-[clamp(18px,3vmin,34px)] font-semibold">
-                            Live
+                        <div id="format-label" class="shrink-0 text-[clamp(18px,3vmin,34px)] font-semibold">
+                            -
                         </div>
                     </div>
                 </div>
 
-                {{-- RIGHT TIME --}}
                 <div class="hidden md:block min-w-[clamp(120px,18vmin,230px)] text-right text-[clamp(18px,3vmin,34px)] font-semibold">
                     <div>LIVE</div>
                     <div class="mt-[clamp(16px,2vmin,30px)] text-white/85">
@@ -157,8 +127,7 @@
                 </div>
             </div>
 
-            {{-- BOTTOM MENU --}}
-            <div class="mt-[clamp(22px,4vmin,46px)] flex items-center justify-center gap-[clamp(40px,8vmin,120px)] text-[clamp(18px,3vmin,34px)] font-semibold text-white">
+            <div class="mt-[clamp(22px,4vmin,46px)] flex items-center justify-center gap-[clamp(40px,8vmin,120px)] text-[clamp(18px,3vmin,34px)] font-semibold">
                 <button type="button"
                         onclick="window.location.href='{{ route('customer.channels.index', ['tipo' => $channel->type]) }}'"
                         class="flex items-center gap-4 hover:text-orange-300">
@@ -177,29 +146,29 @@
                         id="fullscreen-btn"
                         class="flex items-center gap-4 hover:text-orange-300">
                     <span class="text-[clamp(28px,5vmin,58px)]">▦</span>
-                    Multischermo
+                    Schermo intero
                 </button>
             </div>
         </div>
 
-        {{-- LOADER --}}
         <div id="player-loader"
              class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/70">
             <div class="h-16 w-16 animate-spin rounded-full border-4 border-white/20 border-t-white"></div>
             <div id="loader-text" class="mt-6 text-[clamp(20px,3vmin,38px)] font-black">
-                Preparazione stream...
+                Caricamento stream...
             </div>
         </div>
 
-        {{-- ERROR --}}
         <div id="player-error"
              class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 px-10 text-center">
             <div class="text-[clamp(42px,8vmin,90px)]">⚠️</div>
+
             <div class="mt-4 text-[clamp(26px,5vmin,60px)] font-black">
-                Stream non disponibile
+                Stream non compatibile
             </div>
+
             <div id="player-error-message" class="mt-4 max-w-3xl text-[clamp(15px,2vmin,24px)] text-white/60">
-                Errore del player video.
+                Questo flusso non può essere riprodotto direttamente dal browser.
             </div>
 
             <div class="mt-8 flex gap-4">
@@ -215,13 +184,13 @@
                 </a>
             </div>
         </div>
-
     </div>
 </div>
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/mpegts.js@latest"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -238,20 +207,16 @@
         const fullscreenBtn = document.getElementById('fullscreen-btn');
         const aspectBtn = document.getElementById('aspect-btn');
         const clockNow = document.getElementById('clock-now');
+        const formatLabel = document.getElementById('format-label');
 
-        const isLive = @json($channel->type === 'live');
-
-        const streamUrl = @json(
-            $channel->type === 'live'
-                ? route('stream.hls', $channel)
-                : $channel->stream_url
-        );
+        const streamUrl = @json($channel->stream_url);
 
         let hls = null;
+        let tsPlayer = null;
         let overlayTimer = null;
         let aspectMode = 0;
 
-        function showLoader(text = 'Preparazione stream...') {
+        function showLoader(text = 'Caricamento stream...') {
             loader.classList.remove('hidden');
             loaderText.textContent = text;
             errorBox.classList.add('hidden');
@@ -261,7 +226,7 @@
             loader.classList.add('hidden');
         }
 
-        function showError(text = 'Errore del player video.') {
+        function showError(text = 'Questo flusso non può essere riprodotto direttamente dal browser.') {
             loader.classList.add('hidden');
             errorBox.classList.remove('hidden');
             errorMessage.textContent = text;
@@ -273,11 +238,7 @@
             clearTimeout(overlayTimer);
 
             overlayTimer = setTimeout(function () {
-                if (!video.paused && !errorBox.classList.contains('hidden')) {
-                    return;
-                }
-
-                if (!video.paused) {
+                if (!video.paused && errorBox.classList.contains('hidden')) {
                     overlay.classList.add('opacity-0', 'pointer-events-none');
                 }
             }, 4500);
@@ -292,111 +253,173 @@
             volumeLevel.style.height = Math.round((video.muted ? 0 : video.volume) * 100) + '%';
         }
 
-        function togglePlay() {
+        function detectFormat(url) {
+            const clean = url.split('?')[0].toLowerCase();
+
+            if (clean.endsWith('.m3u8')) return 'hls';
+            if (clean.endsWith('.ts') || clean.includes('/live/')) return 'mpegts';
+            if (clean.endsWith('.mp4') || clean.endsWith('.m4v') || clean.endsWith('.webm')) return 'native';
+
+            return 'auto';
+        }
+
+        function destroyPlayers() {
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+
+            if (tsPlayer) {
+                try {
+                    tsPlayer.unload();
+                    tsPlayer.detachMediaElement();
+                    tsPlayer.destroy();
+                } catch (e) {}
+
+                tsPlayer = null;
+            }
+
+            video.removeAttribute('src');
+            video.load();
+        }
+
+        function playHls(url) {
+            formatLabel.textContent = 'HLS';
+
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play().catch(() => showLoader('Premi Play per avviare'));
+                return;
+            }
+
+            if (!window.Hls || !Hls.isSupported()) {
+                showError('HLS non supportato da questo browser.');
+                return;
+            }
+
+            hls = new Hls({
+                lowLatencyMode: false,
+                backBufferLength: 60,
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                liveSyncDurationCount: 4,
+                liveMaxLatencyDurationCount: 8,
+                manifestLoadingTimeOut: 60000,
+                levelLoadingTimeOut: 60000,
+                fragLoadingTimeOut: 60000,
+                fragLoadingMaxRetry: 8,
+                manifestLoadingMaxRetry: 8,
+                levelLoadingMaxRetry: 8
+            });
+
+            hls.loadSource(url);
+            hls.attachMedia(video);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                video.play().catch(() => showLoader('Premi Play per avviare'));
+            });
+
+            hls.on(Hls.Events.ERROR, function (event, data) {
+                if (!data || !data.fatal) return;
+
+                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                    hls.startLoad();
+                    return;
+                }
+
+                if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                    hls.recoverMediaError();
+                    return;
+                }
+
+                showError('Stream HLS non riproducibile.');
+            });
+        }
+
+        function playMpegTs(url) {
+            formatLabel.textContent = 'MPEG-TS';
+
+            if (!window.mpegts || !mpegts.isSupported()) {
+                showError('MPEG-TS non supportato da questo browser.');
+                return;
+            }
+
+            tsPlayer = mpegts.createPlayer({
+                type: 'mpegts',
+                isLive: true,
+                url: url
+            }, {
+                enableWorker: true,
+                enableStashBuffer: true,
+                stashInitialSize: 1024 * 1024 * 3,
+                lazyLoad: false,
+                liveBufferLatencyChasing: false,
+                autoCleanupSourceBuffer: true
+            });
+
+            tsPlayer.attachMediaElement(video);
+            tsPlayer.load();
+
+            video.play().catch(() => showLoader('Premi Play per avviare'));
+
+            tsPlayer.on(mpegts.Events.ERROR, function () {
+                showError('Stream TS non compatibile. Se il canale è HEVC/H.265 serve FFmpeg o una sorgente HLS compatibile.');
+            });
+        }
+
+        function playNative(url) {
+            formatLabel.textContent = 'Nativo';
+            video.src = url;
+            video.play().catch(() => showLoader('Premi Play per avviare'));
+        }
+
+        function startPlayer() {
+            destroyPlayers();
+            showLoader('Caricamento stream...');
+
+            const format = detectFormat(streamUrl);
+
+            if (format === 'hls') {
+                playHls(streamUrl);
+                return;
+            }
+
+            if (format === 'mpegts') {
+                playMpegTs(streamUrl);
+                return;
+            }
+
+            if (format === 'native') {
+                playNative(streamUrl);
+                return;
+            }
+
+            playHls(streamUrl);
+        }
+
+        playBtn.addEventListener('click', function () {
             if (video.paused) {
-                video.play().catch(function () {
-                    showLoader('Premi Play per avviare lo stream');
-                });
+                video.play().catch(() => {});
             } else {
                 video.pause();
             }
 
             updatePlayIcon();
             showOverlay();
-        }
+        });
 
-        function changeVolume(delta) {
-            video.muted = false;
-            video.volume = Math.max(0, Math.min(1, video.volume + delta));
-            updateVolumeIcon();
-            showOverlay();
-        }
-
-        function startPlayer() {
-            showLoader(isLive ? 'Preparazione HLS locale...' : 'Caricamento video...');
-
-            const finalUrl = isLive ? streamUrl + '?t=' + Date.now() : streamUrl;
-
-            if (isLive || finalUrl.toLowerCase().includes('.m3u8')) {
-                if (Hls.isSupported()) {
-                    hls = new Hls({
-                        lowLatencyMode: true,
-                        backBufferLength: 30,
-                        maxBufferLength: 12,
-                        maxMaxBufferLength: 20,
-                        liveSyncDurationCount: 2,
-                        manifestLoadingTimeOut: 60000,
-                        levelLoadingTimeOut: 60000,
-                        fragLoadingTimeOut: 60000
-                    });
-
-                    hls.loadSource(finalUrl);
-                    hls.attachMedia(video);
-
-                    hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                        video.play().catch(function () {
-                            showLoader('Premi Play per avviare lo stream');
-                        });
-                    });
-
-                    hls.on(Hls.Events.ERROR, function (event, data) {
-                        if (data.fatal) {
-                            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                                hls.startLoad();
-                                return;
-                            }
-
-                            if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                                hls.recoverMediaError();
-                                return;
-                            }
-
-                            showError('Errore HLS: ' + (data.details || 'stream non disponibile'));
-                        }
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = finalUrl;
-                    video.play().catch(function () {
-                        showLoader('Premi Play per avviare lo stream');
-                    });
-                } else {
-                    showError('Il browser non supporta HLS.');
-                }
-            } else {
-                video.src = finalUrl;
-                video.play().catch(function () {
-                    showLoader('Premi Play per avviare lo stream');
-                });
-            }
-        }
-
-        playBtn.addEventListener('click', togglePlay);
-
-        document.getElementById('mute-btn').addEventListener('click', function () {
+        muteBtn.addEventListener('click', function () {
             video.muted = !video.muted;
             updateVolumeIcon();
             showOverlay();
         });
 
-        document.getElementById('rewind-btn').addEventListener('click', function () {
-            if (!isLive) {
-                video.currentTime = Math.max(0, video.currentTime - 15);
-            }
-            showOverlay();
-        });
-
-        document.getElementById('forward-btn').addEventListener('click', function () {
-            if (!isLive) {
-                video.currentTime = Math.min(video.duration || video.currentTime, video.currentTime + 15);
-            }
-            showOverlay();
-        });
+        document.getElementById('rewind-btn').addEventListener('click', showOverlay);
+        document.getElementById('forward-btn').addEventListener('click', showOverlay);
 
         fullscreenBtn.addEventListener('click', function () {
-            const root = document.documentElement;
-
             if (!document.fullscreenElement) {
-                root.requestFullscreen?.();
+                document.documentElement.requestFullscreen?.();
             } else {
                 document.exitFullscreen?.();
             }
@@ -407,27 +430,14 @@
         aspectBtn.addEventListener('click', function () {
             aspectMode = (aspectMode + 1) % 3;
 
-            if (aspectMode === 0) {
-                video.classList.remove('object-cover');
-                video.classList.add('object-contain');
-            }
+            video.classList.remove('object-contain', 'object-cover', 'object-fill');
 
-            if (aspectMode === 1) {
-                video.classList.remove('object-contain');
-                video.classList.add('object-cover');
-            }
-
-            if (aspectMode === 2) {
-                video.classList.remove('object-cover');
-                video.classList.add('object-fill');
-            }
+            if (aspectMode === 0) video.classList.add('object-contain');
+            if (aspectMode === 1) video.classList.add('object-cover');
+            if (aspectMode === 2) video.classList.add('object-fill');
 
             showOverlay();
         });
-
-        video.addEventListener('click', showOverlay);
-        overlay.addEventListener('mousemove', showOverlay);
-        overlay.addEventListener('touchstart', showOverlay);
 
         video.addEventListener('playing', function () {
             hideLoader();
@@ -445,35 +455,11 @@
         });
 
         video.addEventListener('error', function () {
-            showError('Errore del player video.');
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === ' ' || event.key === 'Enter') {
-                event.preventDefault();
-                togglePlay();
-            }
-
-            if (event.key === 'ArrowUp') {
-                changeVolume(0.1);
-            }
-
-            if (event.key === 'ArrowDown') {
-                changeVolume(-0.1);
-            }
-
-            if (event.key === 'Escape' || event.key === 'Backspace') {
-                window.location.href = @json(route('customer.channels.index', ['tipo' => $channel->type]));
-            }
-
-            if (event.key.toLowerCase() === 'f') {
-                fullscreenBtn.click();
-            }
+            showError('Errore video. Il codec potrebbe non essere supportato dal browser.');
         });
 
         function updateClock() {
-            const now = new Date();
-            clockNow.textContent = now.toLocaleTimeString('it-IT', {
+            clockNow.textContent = new Date().toLocaleTimeString('it-IT', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
@@ -486,7 +472,7 @@
         updateVolumeIcon();
         updatePlayIcon();
 
-        setTimeout(startPlayer, isLive ? 3500 : 500);
+        startPlayer();
     });
 </script>
 @endpush
