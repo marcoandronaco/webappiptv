@@ -11,14 +11,22 @@ use Illuminate\Validation\Rule;
 class PlaylistController extends Controller
 {
     public function index()
-    {
-        $playlists = Playlist::withCount('channels')->latest()->get();
+{
+    $playlists = Playlist::query()
+        ->withCount('channels')
+        ->latest('updated_at')
+        ->get();
 
-        return view('customer.playlists.index', [
-            'playlists' => $playlists,
-            'deviceCode' => 'DEVICE-XXXX-XXXX',
-        ]);
-    }
+    $currentPlaylist = Playlist::query()
+        ->where('is_active', true)
+        ->latest('updated_at')
+        ->first();
+
+    return view('customer.playlists.index', [
+        'playlists' => $playlists,
+        'currentPlaylist' => $currentPlaylist,
+    ]);
+}
 
     public function create()
     {

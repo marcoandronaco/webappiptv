@@ -270,7 +270,9 @@
                         </div>
 
                         <span class="text-[clamp(10px,2.5vmin,26px)] tracking-widest truncate">
-                            {{ auth()->check() ? auth()->user()->name : 'salvoiptv' }}
+                            @if(!empty($currentPlaylist?->name))
+                                {{ $currentPlaylist->name }}
+                            @endif
                         </span>
                     </div>
 

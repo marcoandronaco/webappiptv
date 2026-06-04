@@ -1,14 +1,20 @@
 <?php
 
-use App\Http\Controllers\StreamController;
 use App\Http\Controllers\Customer\ChannelController;
 use App\Http\Controllers\Customer\PlaylistController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\TvPlayerController;
+use App\Http\Controllers\StreamController;
+use App\Models\Playlist;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    $currentPlaylist = Playlist::query()
+        ->where('is_active', true)
+        ->latest('updated_at')
+        ->first();
+
     return view('welcome', [
-        'deviceCode' => 'DEVICE-84F91A7C20D3',
+        'currentPlaylist' => $currentPlaylist,
     ]);
 });
 

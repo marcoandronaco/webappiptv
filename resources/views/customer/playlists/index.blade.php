@@ -338,7 +338,9 @@
                     </span>
 
                     <span class="text-[clamp(10px,2vmin,20px)] truncate">
-                        {{ auth()->check() ? auth()->user()->name : 'salvoiptv' }}
+                        @if(!empty($currentPlaylist?->name))
+                            {{ $currentPlaylist->name }}
+                        @endif
                     </span>
                 </div>
 

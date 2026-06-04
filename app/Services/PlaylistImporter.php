@@ -79,16 +79,18 @@ class PlaylistImporter
                     }
 
                     $name = $current['name'] ?: 'Canale senza nome';
+                    $type = $this->detectType($group, $name, $line);
+                    $streamUrl = $this->normalizeStreamUrl($line, $type);
 
                     $buffer[] = [
                         'playlist_id' => $playlist->id,
                         'name' => Str::limit($name, 250, ''),
-                        'type' => $this->detectType($group, $name, $line),
+                        'type' => $type,
                         'is_series_parent' => false,
                         'logo' => $this->limitNullable($current['logo'] ?? null),
                         'group_title' => $this->limitNullable($group),
                         'tvg_id' => $this->limitNullable($current['tvg_id'] ?? null),
-                        'stream_url' => $line,
+                        'stream_url' => $streamUrl,
                         'stream_id' => null,
                         'series_id' => null,
                         'season_number' => null,
@@ -210,6 +212,7 @@ class PlaylistImporter
 
         $playlist->update([
             'last_used_at' => now(),
+            'import_message' => null,
         ]);
 
         return $count;
@@ -307,10 +310,16 @@ class PlaylistImporter
             }
 
             if ($type === 'live') {
+                /*
+                 * IMPORTANTE:
+                 * Per i Live TV Xtream salviamo direttamente .ts.
+                 * Così dopo ogni nuova importazione il player usa MPEG-TS
+                 * e parte subito, senza tornare su .m3u8/HLS.
+                 */
                 $streamUrl = $host . '/live/' .
                     rawurlencode($username) . '/' .
                     rawurlencode($password) . '/' .
-                    $streamId . '.m3u8';
+                    $streamId . '.ts';
 
                 $name = $stream['name'] ?? 'Canale senza nome';
             } else {
@@ -323,6 +332,8 @@ class PlaylistImporter
 
                 $name = $stream['name'] ?? 'Film senza nome';
             }
+
+            $streamUrl = $this->normalizeStreamUrl($streamUrl, $type);
 
             $buffer[] = [
                 'playlist_id' => $playlist->id,
@@ -618,6 +629,23 @@ class PlaylistImporter
         }
 
         return 'live';
+    }
+
+    private function normalizeStreamUrl(string $url, string $type): string
+    {
+        if ($type !== 'live') {
+            return $url;
+        }
+
+        /*
+         * Alcuni provider Xtream generano Live TV sia in .m3u8 sia in .ts.
+         * Nel tuo player i Live partono meglio e subito con .ts.
+         *
+         * Questa sostituzione conserva eventuali query string:
+         * esempio:
+         * canale.m3u8?token=123  ->  canale.ts?token=123
+         */
+        return preg_replace('/\.m3u8(?=($|\?))/i', '.ts', $url) ?: $url;
     }
 
     private function limitNullable(?string $value): ?string
