@@ -4,76 +4,67 @@
 
 @if($type === 'live')
 
+@php
+    $isLivePlayerPage = request()->filled('channel') && $playableChannel;
+@endphp
+
+@if(!$isLivePlayerPage)
+
+{{-- PAGINA 1 LIVE TV: CATEGORIE + GRIGLIA CANALI --}}
 <div class="h-full w-full overflow-hidden bg-[#070b18] text-white">
-    <div class="h-full w-full p-[clamp(4px,0.9vmin,14px)]">
+    <div class="h-full w-full p-[clamp(6px,1.2vmin,18px)]">
 
-        <div class="grid h-full grid-cols-[clamp(165px,18vw,310px)_clamp(215px,24vw,405px)_1fr] gap-[clamp(4px,0.9vmin,14px)]">
+        <div class="grid h-full grid-cols-[clamp(250px,30vw,520px)_1fr] gap-[clamp(6px,1.2vmin,18px)]">
 
-            {{-- CATEGORIE LIVE COMPATTE --}}
-            <aside class="min-h-0 overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
+            {{-- CATEGORIE --}}
+            <aside class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
 
-                <div class="mb-[clamp(4px,0.8vmin,10px)] grid grid-cols-[1fr_auto] gap-[clamp(4px,0.8vmin,8px)]">
+                <div class="mb-3 grid grid-cols-[1fr_auto] gap-2">
                     <a href="{{ url('/') }}"
-                       class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-violet-700 px-[clamp(8px,1.5vmin,16px)] py-[clamp(6px,1.2vmin,12px)] text-[clamp(10px,1.45vmin,15px)] font-black hover:bg-violet-600"
+                       class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-violet-700 px-4 py-3 text-[clamp(12px,1.7vmin,17px)] font-black hover:bg-violet-600"
                        data-preserve-scroll>
                         ← Home
                     </a>
 
                     <a href="{{ route('customer.playlists.index') }}"
-                       class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-white/[0.08] px-[clamp(8px,1.5vmin,16px)] py-[clamp(6px,1.2vmin,12px)] text-[clamp(10px,1.45vmin,15px)] font-black hover:bg-white/[0.14]"
+                       class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.08] px-4 py-3 text-[clamp(12px,1.7vmin,17px)] font-black hover:bg-white/[0.14]"
                        data-preserve-scroll>
                         Liste
                     </a>
                 </div>
 
-                <div class="mb-[clamp(4px,0.8vmin,10px)] flex items-center gap-[clamp(6px,1vmin,12px)] rounded-[clamp(12px,2vmin,20px)] bg-white/[0.07] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)]">
-                    <div class="text-[clamp(17px,2.4vmin,28px)]">▦</div>
-
-                    <div class="min-w-0">
-                        <div class="truncate text-[clamp(11px,1.65vmin,18px)] font-black">
-                            TV dal vivo
-                        </div>
-
-                        <div class="truncate text-[clamp(8px,1.2vmin,12px)] text-white/45">
-                            {{ $totalChannels }} canali
-                        </div>
-                    </div>
-                </div>
-
                 <form method="GET"
                       action="{{ route('customer.channels.index') }}"
-                      class="mb-[clamp(4px,0.8vmin,10px)]"
+                      class="mb-3"
                       data-preserve-form>
                     <input type="hidden" name="tipo" value="{{ $type }}">
 
                     <input type="text"
                            name="category_search"
                            value="{{ $categorySearch }}"
-                           placeholder="Cerca categoria..."
-                           class="w-full rounded-[clamp(10px,1.8vmin,18px)] border border-white/10 bg-black/25 px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(10px,1.45vmin,15px)] text-white placeholder:text-white/35 outline-none focus:border-orange-400">
+                           placeholder="Cerca nelle categorie..."
+                           class="w-full rounded-[clamp(12px,2vmin,20px)] border border-white/10 bg-black/25 px-4 py-3 text-[clamp(12px,1.7vmin,16px)] text-white placeholder:text-white/35 outline-none focus:border-orange-400">
 
                     @if($categorySearch)
                         <a href="{{ route('customer.channels.index', ['tipo' => $type]) }}"
                            data-preserve-scroll
-                           class="mt-1 block rounded-xl bg-white/10 px-3 py-1.5 text-center text-[clamp(8px,1.1vmin,11px)] font-black text-white/70 hover:bg-white/15">
+                           class="mt-2 block rounded-xl bg-white/10 px-4 py-2 text-center text-xs font-black text-white/70 hover:bg-white/15">
                             Pulisci ricerca
                         </a>
                     @endif
                 </form>
 
-                <div id="categoriesScroll"
-                     class="iptv-panel-scroll overflow-y-auto pr-1 space-y-[clamp(4px,0.7vmin,8px)]"
-                     style="height: calc(100% - clamp(116px, 19vmin, 175px));">
+                <div id="categoriesScroll" class="iptv-panel-scroll min-h-0 flex-1 overflow-y-auto pr-1 space-y-[clamp(4px,0.7vmin,8px)]">
 
                     <a href="{{ route('customer.channels.index', [
                         'tipo' => $type,
                         'category_search' => $categorySearch,
                     ]) }}"
                        data-preserve-scroll
-                       class="js-scroll-item flex items-center justify-between rounded-[clamp(10px,1.8vmin,18px)] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] transition
+                       class="js-scroll-item flex items-center justify-between rounded-[clamp(12px,2vmin,20px)] px-4 py-3 transition
                        {{ !$category ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
-                        <span class="truncate text-[clamp(10px,1.45vmin,15px)] font-black">Tutto</span>
-                        <span class="text-[clamp(9px,1.25vmin,13px)] font-bold text-white/80">{{ $totalChannels }}</span>
+                        <span class="truncate font-black text-[clamp(13px,1.8vmin,19px)]">Tutto</span>
+                        <span class="font-bold text-white/80">{{ $totalChannels }}</span>
                     </a>
 
                     @forelse($categories as $cat)
@@ -83,63 +74,47 @@
                             'category_search' => $categorySearch,
                         ]) }}"
                            data-preserve-scroll
-                           class="js-scroll-item flex items-center justify-between gap-2 rounded-[clamp(10px,1.8vmin,18px)] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] transition
+                           class="js-scroll-item flex items-center justify-between gap-3 rounded-[clamp(12px,2vmin,20px)] px-4 py-3 transition
                            {{ $category === $cat->group_title ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
 
-                            <span class="truncate text-[clamp(10px,1.45vmin,15px)] font-black">
+                            <span class="truncate font-black text-[clamp(13px,1.8vmin,19px)]">
                                 {{ $cat->group_title }}
                             </span>
 
-                            <span class="text-[clamp(9px,1.25vmin,13px)] font-bold text-white/80">
+                            <span class="font-bold text-white/80">
                                 {{ $cat->total }}
                             </span>
                         </a>
                     @empty
-                        <div class="rounded-2xl bg-white/[0.07] p-3 text-[clamp(10px,1.4vmin,14px)] text-white/50">
+                        <div class="rounded-2xl bg-white/[0.07] p-5 text-white/50">
                             Nessuna categoria trovata.
                         </div>
                     @endforelse
                 </div>
             </aside>
 
-            {{-- ELENCO CANALI LIVE COMPATTO --}}
-            <section class="min-h-0 overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
+            {{-- GRIGLIA CANALI --}}
+            <main class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(18px,3vmin,30px)] border border-white/10 bg-white/[0.035] p-[clamp(8px,1.3vmin,16px)] shadow-2xl">
 
-                <div class="mb-[clamp(4px,0.8vmin,10px)] flex items-center justify-between gap-2 rounded-[clamp(12px,2vmin,20px)] bg-white/[0.07] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)]">
-                    <div class="min-w-0">
-                        <div class="truncate text-[clamp(11px,1.65vmin,18px)] font-black">
-                            Elenco canali
+                <div class="mb-3 grid shrink-0 grid-cols-[1fr_auto] items-center gap-3">
+                    <div class="flex items-center gap-3 rounded-[clamp(14px,2vmin,22px)] bg-white/[0.07] px-4 py-3">
+                        <span class="text-xl">🇮🇹</span>
+
+                        <div class="min-w-0">
+                            <div class="truncate text-[clamp(15px,2.2vmin,26px)] font-black">
+                                {{ $category ?: 'TOP ITALIA' }}
+                            </div>
+
+                            <div class="truncate text-[clamp(10px,1.4vmin,14px)] text-white/45">
+                                Seleziona un canale per aprire player ed EPG
+                            </div>
                         </div>
-
-                        <div class="max-w-[260px] truncate text-[clamp(8px,1.2vmin,12px)] text-white/45">
-                            {{ $category ?: 'Tutti i canali' }}
-                        </div>
-                    </div>
-
-                    <div class="flex gap-[clamp(4px,0.7vmin,8px)]">
-                        <a href="{{ route('customer.channels.index', ['tipo' => 'live']) }}"
-                           data-preserve-scroll
-                           class="rounded-xl px-[clamp(6px,1.1vmin,12px)] py-[clamp(5px,0.9vmin,9px)] text-[clamp(8px,1.15vmin,11px)] font-black {{ $type === 'live' ? 'bg-orange-500' : 'bg-white/10' }}">
-                            TV
-                        </a>
-
-                        <a href="{{ route('customer.channels.index', ['tipo' => 'film']) }}"
-                           data-preserve-scroll
-                           class="rounded-xl px-[clamp(6px,1.1vmin,12px)] py-[clamp(5px,0.9vmin,9px)] text-[clamp(8px,1.15vmin,11px)] font-black {{ $type === 'film' ? 'bg-orange-500' : 'bg-white/10' }}">
-                            Film
-                        </a>
-
-                        <a href="{{ route('customer.channels.index', ['tipo' => 'serie']) }}"
-                           data-preserve-scroll
-                           class="rounded-xl px-[clamp(6px,1.1vmin,12px)] py-[clamp(5px,0.9vmin,9px)] text-[clamp(8px,1.15vmin,11px)] font-black {{ $type === 'serie' ? 'bg-orange-500' : 'bg-white/10' }}">
-                            Serie
-                        </a>
                     </div>
                 </div>
 
                 <form method="GET"
                       action="{{ route('customer.channels.index') }}"
-                      class="mb-[clamp(4px,0.8vmin,10px)]"
+                      class="mb-3 shrink-0"
                       data-preserve-form>
                     <input type="hidden" name="tipo" value="{{ $type }}">
                     <input type="hidden" name="category" value="{{ $category }}">
@@ -148,26 +123,160 @@
                     <input type="text"
                            name="channel_search"
                            value="{{ $channelSearch }}"
-                           placeholder="{{ $category ? 'Cerca canale...' : 'Seleziona prima una categoria' }}"
-                           @disabled(!$category)
-                           class="w-full rounded-[clamp(10px,1.8vmin,18px)] border border-white/10 bg-black/25 px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(10px,1.45vmin,15px)] text-white placeholder:text-white/35 outline-none focus:border-orange-400 disabled:cursor-not-allowed disabled:opacity-45">
+                           placeholder="Cerca canale..."
+                           class="w-full rounded-[clamp(12px,2vmin,20px)] border border-white/10 bg-black/25 px-4 py-3 text-[clamp(12px,1.7vmin,16px)] text-white placeholder:text-white/35 outline-none focus:border-orange-400">
 
-                    @if($category && $channelSearch)
-                        <a href="{{ route('customer.channels.index', [
-                            'tipo' => $type,
-                            'category' => $category,
-                            'category_search' => $categorySearch,
-                        ]) }}"
-                           data-preserve-scroll
-                           class="mt-1 block rounded-xl bg-white/10 px-3 py-1.5 text-center text-[clamp(8px,1.1vmin,11px)] font-black text-white/70 hover:bg-white/15">
-                            Pulisci ricerca
-                        </a>
-                    @endif
+                           @if($channelSearch)
+                                <a href="{{ route('customer.channels.index', [
+                                    'tipo' => $type,
+                                    'category' => $category,
+                                    'category_search' => $categorySearch,
+                                ]) }}"
+                                data-preserve-scroll
+                                class="mt-2 block rounded-xl bg-white/10 px-4 py-2 text-center text-xs font-black text-white/70 hover:bg-white/15">
+                                    Pulisci ricerca canali
+                                </a>
+                            @endif
+                </form>
+
+                <div id="channelsScroll" class="iptv-panel-scroll min-h-0 flex-1 overflow-y-auto pr-1">
+                    <div class="grid grid-cols-5 gap-[clamp(8px,1.2vmin,16px)]">
+                        @forelse($channels as $channel)
+                            <a href="{{ route('customer.channels.index', [
+                                'tipo' => $type,
+                                'category' => $category,
+                                'category_search' => $categorySearch,
+                                'channel_search' => $channelSearch,
+                                'channel' => $channel->id,
+                                'page' => request('page'),
+                            ]) }}"
+                               data-preserve-scroll
+                               class="js-scroll-item group overflow-hidden rounded-[clamp(12px,2vmin,20px)] border border-white/10 bg-white/[0.055] transition hover:scale-[1.025] hover:bg-white/[0.10]">
+
+                                <div class="flex aspect-video items-center justify-center overflow-hidden bg-black/35">
+                                    @if($channel->logo)
+                                        <img src="{{ $channel->logo }}"
+                                             class="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-105"
+                                             alt="{{ $channel->name }}">
+                                    @else
+                                        <div class="px-3 text-center text-[clamp(13px,1.9vmin,20px)] font-black text-white/70">
+                                            {{ $channel->name }}
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="px-3 py-2">
+                                    <div class="truncate text-center text-[clamp(11px,1.55vmin,16px)] font-black">
+                                        {{ $channel->name }}
+                                    </div>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="col-span-5 rounded-2xl bg-white/[0.07] p-6 text-white/50">
+                                Nessun canale trovato.
+                            </div>
+                        @endforelse
+                    </div>
+
+                </div>
+                @if($channels->hasPages())
+                    <div class="mt-[clamp(6px,1vmin,12px)] grid shrink-0 grid-cols-2 gap-[clamp(6px,1vmin,12px)]" data-preserve-scroll>
+
+                        @if($channels->onFirstPage())
+                            <span class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.04] px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white/30">
+                                ← Previous
+                            </span>
+                        @else
+                            <a href="{{ $channels->previousPageUrl() }}"
+                            data-preserve-scroll
+                            class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.08] px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white hover:bg-white/[0.14]">
+                                ← Previous
+                            </a>
+                        @endif
+
+                        @if($channels->hasMorePages())
+                            <a href="{{ $channels->nextPageUrl() }}"
+                            data-preserve-scroll
+                            class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-violet-700 px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white hover:bg-violet-600">
+                                Next →
+                            </a>
+                        @else
+                            <span class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.04] px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white/30">
+                                Next →
+                            </span>
+                        @endif
+
+                    </div>
+                @endif
+            </main>
+        </div>
+    </div>
+</div>
+
+@else
+
+{{-- PAGINA 2 LIVE TV: ELENCO CANALI + PLAYER + EPG SENZA CATEGORIE --}}
+<div class="h-full w-full overflow-hidden bg-[#070b18] text-white">
+    <div class="h-full w-full p-[clamp(4px,0.9vmin,14px)]">
+
+        <div class="grid h-full grid-cols-[clamp(240px,28vw,460px)_1fr] gap-[clamp(4px,0.9vmin,14px)]">
+
+            {{-- ELENCO CANALI --}}
+            <section class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
+
+                <div class="mb-[clamp(4px,0.8vmin,10px)] grid shrink-0 grid-cols-[1fr_auto] gap-2">
+                    <a href="{{ route('customer.channels.index', [
+                        'tipo' => 'live',
+                        'category' => $category,
+                        'category_search' => $categorySearch,
+                        'channel_search' => $channelSearch,
+                        'page' => request('page'),
+                    ]) }}"
+                       class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-violet-700 px-[clamp(8px,1.5vmin,16px)] py-[clamp(6px,1.2vmin,12px)] text-[clamp(10px,1.45vmin,15px)] font-black hover:bg-violet-600"
+                       data-preserve-scroll>
+                        ← Categorie
+                    </a>
+
+                    <a href="{{ url('/') }}"
+                       class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-white/[0.08] px-[clamp(8px,1.5vmin,16px)] py-[clamp(6px,1.2vmin,12px)] text-[clamp(10px,1.45vmin,15px)] font-black hover:bg-white/[0.14]"
+                       data-preserve-scroll>
+                        Home
+                    </a>
+                </div>
+
+            
+                <form method="GET"
+                        action="{{ route('customer.channels.index') }}"
+                        class="mb-[clamp(4px,0.8vmin,10px)] shrink-0"
+                        data-preserve-form>
+                    <input type="hidden" name="tipo" value="{{ $type }}">
+                    <input type="hidden" name="category" value="{{ $category }}">
+                    <input type="hidden" name="category_search" value="{{ $categorySearch }}">
+
+                    <input type="text"
+                           name="channel_search"
+                           value="{{ $channelSearch }}"
+                           placeholder="Cerca canale..."
+                           class="w-full rounded-[clamp(10px,1.8vmin,18px)] border border-white/10 bg-black/25 px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(10px,1.45vmin,15px)] text-white placeholder:text-white/35 outline-none focus:border-orange-400">
+
+                           @if($channelSearch)
+                                <a href="{{ route('customer.channels.index', [
+                                    'tipo' => $type,
+                                    'category' => $category,
+                                    'category_search' => $categorySearch,
+                                    'channel' => optional($selectedChannel)->id,
+                                    'page' => request('page'),
+                                ]) }}"
+                                data-preserve-scroll
+                                class="mt-1 block rounded-xl bg-white/10 px-3 py-1.5 text-center text-[clamp(8px,1.1vmin,11px)] font-black text-white/70 hover:bg-white/15">
+                                    Pulisci ricerca canali
+                                </a>
+                            @endif
                 </form>
 
                 <div id="channelsScroll"
-                     class="iptv-panel-scroll overflow-y-auto pr-1 space-y-[clamp(4px,0.7vmin,8px)]"
-                     style="height: calc(100% - clamp(126px, 21vmin, 188px));">
+                        class="iptv-panel-scroll min-h-0 flex-1 overflow-y-auto pr-1 space-y-[clamp(4px,0.7vmin,8px)]">
+
                     @forelse($channels as $index => $channel)
                         <a href="{{ route('customer.channels.index', [
                             'tipo' => $type,
@@ -216,17 +325,42 @@
                     @endforelse
                 </div>
 
-                <div class="mt-[clamp(4px,0.8vmin,10px)] scale-[0.86] origin-top-left" data-preserve-scroll>
-                    {{ $channels->links() }}
-                </div>
+                @if($channels->hasPages())
+                    <div class="mt-[clamp(4px,0.8vmin,10px)] grid shrink-0 grid-cols-2 gap-[clamp(4px,0.8vmin,10px)]" data-preserve-scroll>
+
+                        @if($channels->onFirstPage())
+                            <span class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-white/[0.04] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(9px,1.2vmin,13px)] font-black text-white/30">
+                                ← Previous
+                            </span>
+                        @else
+                            <a href="{{ $channels->previousPageUrl() }}"
+                            data-preserve-scroll
+                            class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-white/[0.08] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(9px,1.2vmin,13px)] font-black text-white hover:bg-white/[0.14]">
+                                ← Previous
+                            </a>
+                        @endif
+
+                        @if($channels->hasMorePages())
+                            <a href="{{ $channels->nextPageUrl() }}"
+                            data-preserve-scroll
+                            class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-violet-700 px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(9px,1.2vmin,13px)] font-black text-white hover:bg-violet-600">
+                                Next →
+                            </a>
+                        @else
+                            <span class="flex items-center justify-center rounded-[clamp(10px,1.8vmin,18px)] bg-white/[0.04] px-[clamp(8px,1.4vmin,16px)] py-[clamp(6px,1.1vmin,12px)] text-[clamp(9px,1.2vmin,13px)] font-black text-white/30">
+                                Next →
+                            </span>
+                        @endif
+
+                    </div>
+                @endif
             </section>
 
-            {{-- PLAYER + EPG LIVE 70 / 30 --}}
+            {{-- PLAYER + EPG --}}
             <main class="min-h-0 grid grid-rows-[minmax(0,7fr)_minmax(0,3fr)] gap-[clamp(4px,0.9vmin,14px)] overflow-hidden">
 
                 {{-- PLAYER 70% --}}
                 <section class="min-h-0 overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
-
                     <div class="grid h-full grid-rows-[auto_minmax(0,1fr)_auto] gap-[clamp(4px,0.8vmin,10px)]">
 
                         <div class="flex items-center justify-between rounded-[clamp(12px,2vmin,20px)] bg-white/[0.07] px-[clamp(8px,1.4vmin,16px)] py-[clamp(5px,0.9vmin,10px)]">
@@ -244,24 +378,25 @@
 
                         <div class="grid min-h-0 grid-cols-[1fr_clamp(72px,9vw,118px)] gap-[clamp(5px,1vmin,14px)]">
                             <div class="min-h-0 overflow-hidden rounded-[clamp(12px,2vmin,20px)] border border-white/10 bg-black">
-                                @if($playableChannel)
-                                    <video id="iptv-video"
-                                           class="h-full w-full bg-black object-contain"
-                                           controls
-                                           autoplay
-                                           playsinline
-                                           preload="auto"></video>
-                                @else
-                                    <div class="flex h-full items-center justify-center text-[clamp(10px,1.4vmin,14px)] text-white/40">
-                                        Seleziona un canale
-                                    </div>
-                                @endif
+                                <video id="iptv-video"
+                                       class="h-full w-full bg-black object-contain"
+                                       controls
+                                       autoplay
+                                       playsinline
+                                       preload="auto"></video>
                             </div>
 
                             <div class="grid min-h-0 grid-rows-3 gap-[clamp(4px,0.8vmin,10px)]">
-                                <div class="rounded-[clamp(12px,2vmin,18px)] bg-white/[0.08] p-[clamp(5px,0.9vmin,10px)] text-center">
-                                    <div class="text-[clamp(7px,0.95vmin,11px)] text-white/50">{{ now()->format('d/m/Y') }}</div>
-                                    <div class="text-[clamp(14px,2.6vmin,30px)] font-black">{{ now()->format('H:i') }}</div>
+                                <div class="flex flex-col items-center justify-center rounded-[clamp(12px,2vmin,18px)] border border-white/10 bg-gradient-to-br from-white/[0.13] to-white/[0.045] p-[clamp(5px,0.9vmin,10px)] text-center shadow-inner">
+                                    <div id="liveClockTime"
+                                        class="leading-none text-[clamp(18px,3.4vmin,42px)] font-black tracking-tight text-white">
+                                        {{ now()->format('H:i') }}
+                                    </div>
+
+                                    <div id="liveClockDate"
+                                        class="mt-[clamp(3px,0.6vmin,7px)] max-w-full truncate px-1 text-[clamp(7px,1.05vmin,12px)] font-bold uppercase tracking-wide text-white/55">
+                                        {{ now()->translatedFormat('D d M') }}
+                                    </div>
                                 </div>
 
                                 <div class="flex items-center justify-center rounded-[clamp(12px,2vmin,18px)] bg-gradient-to-br from-violet-600 to-red-400 p-[clamp(5px,0.9vmin,10px)] text-center text-[clamp(10px,1.35vmin,14px)] font-black">
@@ -302,7 +437,7 @@
                     </div>
                 </section>
 
-                {{-- EPG 30% CON SCORRIMENTO --}}
+                {{-- EPG 30% --}}
                 <section class="min-h-0 overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
                     <div class="mb-[clamp(4px,0.8vmin,10px)] flex items-center justify-between">
                         <div class="text-[clamp(14px,2.3vmin,26px)] font-black">
@@ -353,6 +488,8 @@
         </div>
     </div>
 </div>
+
+@endif
 
 @else
 
@@ -499,44 +636,60 @@
         {{-- GRIGLIA FILM / SERIE --}}
         <div class="grid h-full grid-cols-[clamp(280px,23vw,430px)_1fr] gap-[clamp(10px,1.5vmin,22px)] p-[clamp(10px,1.6vmin,22px)]">
 
-            <aside class="min-h-0 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.045] p-3">
+            <aside class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(18px,3vmin,30px)] border border-white/10 bg-white/[0.045] p-[clamp(8px,1.4vmin,16px)] shadow-2xl">
 
                 <div class="mb-3 grid grid-cols-[1fr_auto] gap-2">
                     <a href="{{ url('/') }}"
-                       class="rounded-2xl bg-violet-700 px-4 py-3 text-center font-black hover:bg-violet-600"
-                       data-preserve-scroll>
+                    class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-violet-700 px-4 py-3 text-[clamp(13px,1.8vmin,18px)] font-black hover:bg-violet-600"
+                    data-preserve-scroll>
                         ← Home
                     </a>
 
                     <a href="{{ route('customer.playlists.index') }}"
-                       class="rounded-2xl bg-white/10 px-4 py-3 text-center font-black hover:bg-white/15"
-                       data-preserve-scroll>
+                    class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.08] px-4 py-3 text-[clamp(13px,1.8vmin,18px)] font-black hover:bg-white/[0.14]"
+                    data-preserve-scroll>
                         Liste
                     </a>
                 </div>
 
-                <form method="GET" action="{{ route('customer.channels.index') }}" class="mb-3" data-preserve-form>
+            
+                <form method="GET"
+                    action="{{ route('customer.channels.index') }}"
+                    class="mb-[clamp(8px,1.5vmin,16px)]"
+                    data-preserve-form>
                     <input type="hidden" name="tipo" value="{{ $type }}">
 
-                    <div class="flex items-center gap-3 rounded-2xl bg-yellow-400 px-4 py-3 text-black">
-                        <span class="text-2xl">🔍</span>
+                    <input type="text"
+                        name="category_search"
+                        value="{{ $categorySearch }}"
+                        placeholder="Cerca categoria..."
+                        class="w-full rounded-[clamp(12px,2vmin,20px)] border border-white/10 bg-black/25 px-4 py-3 text-[clamp(12px,1.7vmin,16px)] text-white placeholder:text-white/35 outline-none focus:border-orange-400">
 
-                        <input type="text"
-                               name="category_search"
-                               value="{{ $categorySearch }}"
-                               placeholder="Cerca"
-                               class="w-full bg-transparent text-lg font-black outline-none placeholder:text-black/60">
-                    </div>
+                    @if($categorySearch)
+                        <a href="{{ route('customer.channels.index', ['tipo' => $type]) }}"
+                        data-preserve-scroll
+                        class="mt-2 block rounded-xl bg-white/10 px-4 py-2 text-center text-xs font-black text-white/70 hover:bg-white/15">
+                            Pulisci ricerca categorie
+                        </a>
+                    @endif
                 </form>
 
-                <div id="categoriesScroll" class="iptv-panel-scroll h-[calc(100%-126px)] space-y-2 overflow-y-auto pr-1">
+                <div id="categoriesScroll" class="iptv-panel-scroll min-h-0 flex-1 overflow-y-auto pr-1 space-y-2">
 
-                    <a href="{{ route('customer.channels.index', ['tipo' => $type]) }}"
-                       data-preserve-scroll
-                       class="js-scroll-item flex items-center justify-between rounded-2xl px-5 py-4 font-black
-                       {{ !$category ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
-                        <span>Aggiunti di recente</span>
-                        <span>{{ $totalChannels }}</span>
+                    <a href="{{ route('customer.channels.index', [
+                        'tipo' => $type,
+                        'category_search' => $categorySearch,
+                    ]) }}"
+                    data-preserve-scroll
+                    class="js-scroll-item flex items-center justify-between rounded-[clamp(12px,2vmin,20px)] px-4 py-3 transition
+                    {{ !$category ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
+                        <span class="font-black text-[clamp(13px,1.9vmin,19px)]">
+                            Aggiunti di recente
+                        </span>
+
+                        <span class="font-bold text-white/80">
+                            {{ $totalChannels }}
+                        </span>
                     </a>
 
                     @forelse($categories as $cat)
@@ -545,11 +698,17 @@
                             'category' => $cat->group_title,
                             'category_search' => $categorySearch,
                         ]) }}"
-                           data-preserve-scroll
-                           class="js-scroll-item flex items-center justify-between rounded-2xl px-5 py-4 font-black
-                           {{ $category === $cat->group_title ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
-                            <span class="truncate">◇ {{ $cat->group_title }} ◇</span>
-                            <span>{{ $cat->total }}</span>
+                        data-preserve-scroll
+                        class="js-scroll-item flex items-center justify-between gap-3 rounded-[clamp(12px,2vmin,20px)] px-4 py-3 transition
+                        {{ $category === $cat->group_title ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
+
+                            <span class="truncate font-black text-[clamp(13px,1.9vmin,19px)]">
+                                {{ $cat->group_title }}
+                            </span>
+
+                            <span class="font-bold text-white/80">
+                                {{ $cat->total }}
+                            </span>
                         </a>
                     @empty
                         <div class="rounded-2xl bg-white/[0.07] p-5 text-white/50">
@@ -559,8 +718,8 @@
                 </div>
             </aside>
 
-            <main class="min-h-0 overflow-hidden">
-                <div class="mb-4 grid grid-cols-[1fr_auto] gap-4">
+            <main class="flex min-h-0 flex-col overflow-hidden">
+                <div class="mb-4 grid shrink-0 grid-cols-[1fr_auto] gap-4">
                     <form method="GET" action="{{ route('customer.channels.index') }}" data-preserve-form>
                         <input type="hidden" name="tipo" value="{{ $type }}">
                         <input type="hidden" name="category" value="{{ $category }}">
@@ -571,6 +730,18 @@
                                value="{{ $channelSearch }}"
                                placeholder="{{ $type === 'film' ? 'Cerca film...' : 'Cerca serie...' }}"
                                class="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-6 py-4 text-lg font-black outline-none placeholder:text-white/45 focus:border-orange-400">
+
+                               @if($channelSearch)
+                                    <a href="{{ route('customer.channels.index', [
+                                        'tipo' => $type,
+                                        'category' => $category,
+                                        'category_search' => $categorySearch,
+                                    ]) }}"
+                                    data-preserve-scroll
+                                    class="mt-2 block rounded-xl bg-white/10 px-4 py-2 text-center text-xs font-black text-white/70 hover:bg-white/15">
+                                        {{ $type === 'film' ? 'Pulisci ricerca film' : 'Pulisci ricerca serie' }}
+                                    </a>
+                                @endif
                     </form>
 
                     <div class="rounded-2xl bg-white/[0.07] px-8 py-4 text-center text-lg font-black">
@@ -578,7 +749,7 @@
                     </div>
                 </div>
 
-                <div id="vodGridScroll" class="iptv-panel-scroll h-[calc(100%-76px)] overflow-y-auto pr-2">
+                <div id="vodGridScroll" class="iptv-panel-scroll min-h-0 flex-1 overflow-y-auto pr-2">
                     <div class="grid grid-cols-5 gap-[clamp(14px,2vmin,26px)]">
                         @forelse($channels as $item)
                             <a href="{{ route('customer.channels.index', [
@@ -622,10 +793,36 @@
                         @endforelse
                     </div>
 
-                    <div class="mt-5" data-preserve-scroll>
-                        {{ $channels->links() }}
-                    </div>
                 </div>
+                @if($channels->hasPages())
+                    <div class="mt-[clamp(6px,1vmin,12px)] grid shrink-0 grid-cols-2 gap-[clamp(6px,1vmin,12px)]" data-preserve-scroll>
+
+                        @if($channels->onFirstPage())
+                            <span class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.04] px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white/30">
+                                ← Previous
+                            </span>
+                        @else
+                            <a href="{{ $channels->previousPageUrl() }}"
+                            data-preserve-scroll
+                            class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.08] px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white hover:bg-white/[0.14]">
+                                ← Previous
+                            </a>
+                        @endif
+
+                        @if($channels->hasMorePages())
+                            <a href="{{ $channels->nextPageUrl() }}"
+                            data-preserve-scroll
+                            class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-violet-700 px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white hover:bg-violet-600">
+                                Next →
+                            </a>
+                        @else
+                            <span class="flex items-center justify-center rounded-[clamp(12px,2vmin,20px)] bg-white/[0.04] px-[clamp(10px,1.6vmin,18px)] py-[clamp(7px,1.2vmin,13px)] text-[clamp(10px,1.4vmin,14px)] font-black text-white/30">
+                                Next →
+                            </span>
+                        @endif
+
+                    </div>
+                @endif
             </main>
         </div>
 
@@ -646,7 +843,7 @@
                 <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-black/15"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/20"></div>
 
-                <div class="relative z-10 h-full w-full p-[clamp(26px,5vmin,70px)]">
+                <div id="filmDetailScroll" class="iptv-panel-scroll relative z-10 h-full w-full overflow-y-auto p-[clamp(26px,5vmin,70px)]">
 
                     <div class="mb-6 flex items-center gap-3">
                         <a href="{{ route('customer.channels.index', [
@@ -667,7 +864,7 @@
                         </a>
                     </div>
 
-                    <div class="grid h-[calc(100%-80px)] grid-cols-[minmax(430px,42vw)_1fr] gap-8">
+                    <div class="grid min-h-[calc(100%-80px)] grid-cols-[minmax(430px,42vw)_1fr] gap-8 pb-[clamp(30px,5vmin,80px)]">
 
                         <section class="flex flex-col justify-center">
                             <div class="text-[clamp(34px,6vmin,82px)] font-black leading-tight drop-shadow-2xl">
@@ -1137,7 +1334,8 @@ document.addEventListener('DOMContentLoaded', function () {
         channelsScroll: 'iptv-scroll-channels:' + type + ':' + category + ':' + channelSearch,
         vodGridScroll: 'iptv-scroll-vod-grid:' + type + ':' + category + ':' + channelSearch,
         epgScroll: 'iptv-scroll-epg:' + @json(optional($playableChannel)->id ?? 'none'),
-        episodesScroll: 'iptv-scroll-episodes:' + selectedId
+        episodesScroll: 'iptv-scroll-episodes:' + selectedId,
+        filmDetailScroll: 'iptv-scroll-film-detail:' + selectedId
     };
 
     function saveScrollPositions() {
@@ -1202,6 +1400,35 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('beforeunload', saveScrollPositions);
 
     setTimeout(restoreScrollPositions, 120);
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const timeEl = document.getElementById('liveClockTime');
+    const dateEl = document.getElementById('liveClockDate');
+
+    if (!timeEl || !dateEl) {
+        return;
+    }
+
+    function updateLiveClock() {
+        const now = new Date();
+
+        timeEl.textContent = now.toLocaleTimeString('it-IT', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        dateEl.textContent = now.toLocaleDateString('it-IT', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short'
+        }).replace('.', '');
+    }
+
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
 });
 </script>
 @endpush
