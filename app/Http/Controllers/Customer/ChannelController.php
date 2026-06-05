@@ -27,7 +27,6 @@ class ChannelController extends Controller
         $selectedEpisodeId = $request->query('episode');
         $play = $request->boolean('play');
 
-        $hasChannelNumberColumn = Schema::hasColumn('channels', 'channel_number');
 
         $baseQuery = Channel::query()
             ->with('playlist')
@@ -55,9 +54,13 @@ class ChannelController extends Controller
         }
 
         $categories = $categoriesQuery
-            ->select('group_title', DB::raw('count(*) as total'))
+            ->select(
+                'group_title',
+                DB::raw('count(*) as total'),
+                DB::raw('MIN(id) as first_channel_id')
+            )
             ->groupBy('group_title')
-            ->orderBy('group_title')
+            ->orderBy('first_channel_id')
             ->get();
 
         $channelsQuery = clone $baseQuery;
@@ -70,14 +73,8 @@ class ChannelController extends Controller
             $channelsQuery->where('name', 'like', '%' . $channelSearch . '%');
         }
 
-        if ($hasChannelNumberColumn) {
-            $channelsQuery
-                ->orderByRaw('channel_number IS NULL')
-                ->orderBy('channel_number');
-        }
-
         $channels = $channelsQuery
-            ->orderBy('name')
+            ->orderBy('id')
             ->simplePaginate($type === 'live' ? 90 : 60)
             ->withQueryString();
 

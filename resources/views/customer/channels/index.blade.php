@@ -14,7 +14,7 @@
 <div class="h-full w-full overflow-hidden bg-[#070b18] text-white">
     <div class="h-full w-full p-[clamp(4px,0.9vmin,12px)]">
 
-        <div class="grid h-full grid-cols-[clamp(270px,30vw,520px)_1fr] gap-[clamp(5px,1vmin,16px)]">
+        <div class="grid uppercase h-full grid-cols-[clamp(270px,30vw,520px)_1fr] gap-[clamp(5px,1vmin,16px)]">
 
             {{-- CATEGORIE --}}
             <aside class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(16px,2.6vmin,30px)] border border-white/10 bg-white/[0.045] p-[clamp(7px,1.25vmin,18px)] shadow-2xl">
@@ -175,7 +175,7 @@
                                 </div>
 
                                 <div class="px-[clamp(8px,1.5vmin,16px)] py-[clamp(7px,1.2vmin,14px)]">
-                                    <div class="truncate text-center text-[clamp(12px,1.7vmin,18px)] font-black">
+                                    <div class="truncate text-center text-[clamp(9px,1.25vmin,14px)] font-black">
                                         {{ $channel->name }}
                                     </div>
                                 </div>
@@ -232,7 +232,7 @@
         <div class="grid h-full grid-cols-[clamp(240px,28vw,460px)_1fr] gap-[clamp(4px,0.9vmin,14px)]">
 
             {{-- ELENCO CANALI --}}
-            <section class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
+            <section class="flex uppercase min-h-0 flex-col overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
 
                 <div class="mb-[clamp(6px,1vmin,14px)] grid shrink-0 grid-cols-[1fr_auto] gap-[clamp(6px,1vmin,12px)]">
                     <a href="{{ route('customer.channels.index', [
@@ -646,7 +646,7 @@
         {{-- GRIGLIA FILM / SERIE: CATEGORIE + GRIGLIA CONTENUTI --}}
         <div class="h-full w-full p-[clamp(4px,0.9vmin,12px)]">
 
-            <div class="grid h-full grid-cols-[clamp(270px,30vw,520px)_1fr] gap-[clamp(5px,1vmin,16px)]">
+            <div class="grid uppercase h-full grid-cols-[clamp(270px,30vw,520px)_1fr] gap-[clamp(5px,1vmin,16px)]">
 
                 {{-- CATEGORIE --}}
                 <aside class="flex min-h-0 flex-col overflow-hidden rounded-[clamp(16px,2.6vmin,30px)] border border-white/10 bg-white/[0.045] p-[clamp(7px,1.25vmin,18px)] shadow-2xl">
@@ -821,7 +821,7 @@
                                     </div>
 
                                     <div class="px-[clamp(8px,1.5vmin,16px)] py-[clamp(7px,1.2vmin,14px)]">
-                                        <div class="truncate text-center text-[clamp(12px,1.7vmin,18px)] font-black">
+                                        <div class="truncate text-center text-[clamp(9px,1.25vmin,14px)] font-black">
                                             {{ $item->name }}
                                         </div>
                                     </div>
@@ -938,7 +938,7 @@
                                     'page' => request('page'),
                                 ]) }}"
                                    class="flex items-center justify-center gap-4 rounded-2xl bg-black/45 px-8 py-5 text-2xl font-black hover:bg-white/20">
-                                    ▶ GIOCA
+                                    ▶ RIPRODUCI
                                 </a>
 
                                 <button type="button"

@@ -148,7 +148,7 @@
                     </svg>
 
                     <span class="relative text-[clamp(18px,5.5vmin,54px)] leading-none font-extrabold tracking-wide whitespace-nowrap">
-                        TV dal vivo
+                        DIRETTA TV
                     </span>
                 </a>
 
@@ -173,7 +173,7 @@
                     </svg>
 
                     <span class="relative text-[clamp(18px,4.3vmin,42px)] leading-none font-extrabold tracking-wide whitespace-nowrap">
-                        Film
+                        FILM
                     </span>
                 </a>
 
@@ -201,7 +201,7 @@
                     </svg>
 
                     <span class="relative text-[clamp(18px,4.3vmin,42px)] leading-none font-extrabold tracking-wide whitespace-nowrap">
-                        Serie
+                        SERIE
                     </span>
                 </a>
 
@@ -221,7 +221,7 @@
                     </svg>
 
                     <span class="text-[clamp(12px,3.2vmin,30px)] leading-none font-bold tracking-wide whitespace-nowrap">
-                        Impostazioni
+                        IMPOSTAZIONI
                     </span>
                 </a>
 
@@ -245,7 +245,7 @@
                     </svg>
 
                     <span class="text-[clamp(12px,3.2vmin,30px)] leading-none font-bold tracking-wide whitespace-nowrap">
-                        Lista
+                        LISTA
                     </span>
                 </a>
             </main>
