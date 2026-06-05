@@ -371,7 +371,7 @@
 
                 {{-- PLAYER 70% --}}
                 <section class="min-h-0 overflow-hidden rounded-[clamp(14px,2.4vmin,26px)] border border-white/10 bg-white/[0.045] p-[clamp(5px,1vmin,14px)] shadow-2xl">
-                    <div class="grid h-full grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-[clamp(4px,0.8vmin,10px)]">
+                    <div class="grid h-full grid-rows-[auto_minmax(0,1fr)_auto] gap-[clamp(4px,0.8vmin,10px)]">
 
                         <div class="flex items-center justify-between rounded-[clamp(12px,2vmin,20px)] bg-white/[0.07] px-[clamp(8px,1.4vmin,16px)] py-[clamp(5px,0.9vmin,10px)]">
                             <div class="flex items-center gap-[clamp(5px,0.9vmin,12px)]">
@@ -384,11 +384,6 @@
                                 <span class="ml-[clamp(4px,0.8vmin,12px)] h-[clamp(6px,1vmin,12px)] w-[clamp(18px,3vmin,34px)] rounded-full bg-yellow-400"></span>
                                 <span class="text-[clamp(10px,1.45vmin,16px)] font-black">Preferiti</span>
                             </div>
-                        </div>
-
-                        <div id="chromeAudioWarning"
-                            class="hidden rounded-[clamp(10px,1.7vmin,18px)] border border-yellow-400/30 bg-yellow-500/15 px-[clamp(8px,1.4vmin,16px)] py-[clamp(5px,0.9vmin,10px)] text-[clamp(9px,1.2vmin,13px)] font-bold text-yellow-100">
-                            Alcuni canali su Chrome possono avere video senza audio. Per una migliore compatibilità usa Microsoft Edge.
                         </div>
 
                         <div class="grid min-h-0 grid-cols-[1fr_clamp(72px,9vw,118px)] gap-[clamp(5px,1vmin,14px)]">
@@ -1122,18 +1117,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!video || !streamUrl) {
         return;
-    }
-
-    const isMicrosoftEdge = /Edg/i.test(navigator.userAgent);
-
-    const isChrome = /Chrome/i.test(navigator.userAgent)
-        && /Google Inc/i.test(navigator.vendor)
-        && !isMicrosoftEdge;
-
-    const chromeAudioWarning = document.getElementById('chromeAudioWarning');
-
-    if (isChrome && chromeAudioWarning) {
-        chromeAudioWarning.classList.remove('hidden');
     }
 
     function detectFormat(url) {
