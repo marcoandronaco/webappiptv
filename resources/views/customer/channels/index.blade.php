@@ -67,8 +67,8 @@
                        data-preserve-scroll
                        class="js-scroll-item flex items-center justify-between rounded-[clamp(11px,1.8vmin,18px)] px-[clamp(10px,1.7vmin,18px)] py-[clamp(8px,1.25vmin,14px)] transition
                        {{ !$category ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
-                        <span class="truncate font-black text-[clamp(10px,1.35vmin,15px)]">Tutto</span>
-                        <span class="font-bold text-[clamp(9px,1.15vmin,12px)] text-white/80">
+                        <span class="truncate font-black text-[clamp(12px,1.65vmin,18px)]">Tutto</span>
+                        <span class="font-bold text-[clamp(12px,1.65vmin,18px)] text-white/80">
                             {{ $totalChannels }}
                         </span>
                     </a>
@@ -83,16 +83,16 @@
                            class="js-scroll-item flex items-center justify-between gap-2 rounded-[clamp(11px,1.8vmin,18px)] px-[clamp(10px,1.7vmin,18px)] py-[clamp(8px,1.25vmin,14px)] transition
                            {{ $category === $cat->group_title ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
 
-                            <span class="truncate font-black text-[clamp(10px,1.35vmin,15px)]">
+                            <span class="truncate font-black text-[clamp(12px,1.65vmin,18px)]">
                                 {{ $cat->group_title }}
                             </span>
 
-                            <span class="font-bold text-[clamp(9px,1.15vmin,12px)] text-white/80">
+                            <span class="font-bold text-[clamp(12px,1.65vmin,18px)] text-white/80">
                                 {{ $cat->total }}
                             </span>
                         </a>
                     @empty
-                        <div class="rounded-xl bg-white/[0.07] p-3 text-[clamp(9px,1.2vmin,12px)] text-white/50">
+                        <div class="rounded-xl bg-white/[0.07] p-3 text-[clamp(12px,1.65vmin,18px)] text-white/50">
                             Nessuna categoria trovata.
                         </div>
                     @endforelse
@@ -700,11 +700,11 @@
                         class="js-scroll-item flex items-center justify-between rounded-[clamp(11px,1.8vmin,18px)] px-[clamp(10px,1.7vmin,18px)] py-[clamp(8px,1.25vmin,14px)] transition
                         {{ !$category ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
 
-                            <span class="truncate font-black text-[clamp(10px,1.35vmin,15px)]">
+                            <span class="truncate font-black text-[clamp(12px,1.65vmin,18px)]">
                                 Aggiunti di recente
                             </span>
 
-                            <span class="font-bold text-[clamp(9px,1.15vmin,12px)] text-white/80">
+                            <span class="font-bold text-[clamp(12px,1.65vmin,18px)] text-white/80">
                                 {{ $totalChannels }}
                             </span>
                         </a>
@@ -719,16 +719,16 @@
                             class="js-scroll-item flex items-center justify-between gap-2 rounded-[clamp(11px,1.8vmin,18px)] px-[clamp(10px,1.7vmin,18px)] py-[clamp(8px,1.25vmin,14px)] transition
                             {{ $category === $cat->group_title ? 'is-active bg-gradient-to-r from-violet-600 via-fuchsia-500 to-red-400' : 'bg-white/[0.07] hover:bg-white/[0.12]' }}">
 
-                                <span class="truncate font-black text-[clamp(10px,1.35vmin,15px)]">
+                                <span class="truncate font-black text-[clamp(12px,1.65vmin,18px)]">
                                     {{ $cat->group_title }}
                                 </span>
 
-                                <span class="font-bold text-[clamp(9px,1.15vmin,12px)] text-white/80">
+                                <span class="font-bold text-[clamp(12px,1.65vmin,18px)] text-white/80">
                                     {{ $cat->total }}
                                 </span>
                             </a>
                         @empty
-                            <div class="rounded-xl bg-white/[0.07] p-3 text-[clamp(9px,1.2vmin,12px)] text-white/50">
+                            <div class="rounded-xl bg-white/[0.07] p-3 text-[clamp(12px,1.65vmin,18px)] text-white/50">
                                 Nessuna categoria trovata.
                             </div>
                         @endforelse
