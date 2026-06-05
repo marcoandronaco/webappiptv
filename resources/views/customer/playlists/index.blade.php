@@ -323,68 +323,85 @@
         </main>
 
         {{-- FOOTER --}}
-        <footer class="grid grid-cols-2 gap-[clamp(8px,2vmin,30px)] shrink-0 mt-[clamp(10px,2vmin,24px)]">
+        <footer class="grid grid-cols-2 gap-[clamp(8px,2vmin,32px)] shrink-0 mt-[clamp(10px,2vmin,24px)]">
 
-            <div class="space-y-[clamp(5px,1vmin,10px)] min-w-0">
-                <div class="h-[clamp(34px,6vmin,54px)]
-                    px-[clamp(10px,2.5vmin,22px)]
-                    rounded-[clamp(10px,1.5vmin,16px)]
-                    bg-white/10 border border-white/10
-                    flex items-center gap-[clamp(8px,1.5vmin,16px)] min-w-0">
+            {{-- SINISTRA --}}
+            <div class="flex flex-col gap-[clamp(6px,1.2vmin,12px)] min-w-0">
 
-                    <span class="w-[clamp(22px,4vmin,34px)] h-[clamp(22px,4vmin,34px)]
-                        rounded-full bg-blue-400 flex items-center justify-center shrink-0">
-                        👤
-                    </span>
+                <div class="h-[clamp(34px,7vmin,70px)]
+                    px-[clamp(10px,3vmin,32px)]
+                    rounded-[clamp(10px,2vmin,22px)]
+                    bg-white/[0.055] border border-white/10 backdrop-blur-xl
+                    flex items-center gap-[clamp(8px,2vmin,24px)] shadow-xl min-w-0">
 
-                    <span class="text-[clamp(10px,2vmin,20px)] truncate">
+                    <div class="w-[clamp(26px,5vmin,48px)] h-[clamp(26px,5vmin,48px)] rounded-full bg-gradient-to-br from-sky-400 to-violet-600 flex items-center justify-center shadow-[0_0_22px_rgba(139,92,246,0.45)] shrink-0">
+                        <svg class="w-[60%] h-[60%] text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 21c1.5-5 5-8 8-8s6.5 3 8 8"></path>
+                        </svg>
+                    </div>
+
+                    <span class="text-[clamp(10px,2.5vmin,26px)] tracking-widest truncate">
                         @if(!empty($currentPlaylist?->name))
                             {{ $currentPlaylist->name }}
                         @endif
                     </span>
                 </div>
 
-                <div class="h-[clamp(34px,6vmin,54px)]
-                    px-[clamp(10px,2.5vmin,22px)]
-                    rounded-[clamp(10px,1.5vmin,16px)]
-                    bg-white/10 border border-white/10
-                    flex items-center gap-[clamp(8px,1.5vmin,16px)] min-w-0">
+                <div class="h-[clamp(34px,7vmin,70px)]
+                    px-[clamp(10px,3vmin,32px)]
+                    rounded-[clamp(10px,2vmin,22px)]
+                    bg-white/[0.055] border border-white/10 backdrop-blur-xl
+                    flex items-center gap-[clamp(8px,2vmin,24px)] shadow-xl min-w-0">
 
-                    <span class="w-[clamp(22px,4vmin,34px)] h-[clamp(22px,4vmin,34px)]
-                        rounded-full bg-rose-500 flex items-center justify-center shrink-0">
-                        ×
-                    </span>
+                    <div class="w-[clamp(26px,5vmin,48px)] h-[clamp(26px,5vmin,48px)] rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-700 flex items-center justify-center shadow-[0_0_22px_rgba(217,70,239,0.45)] shrink-0">
+                        <svg class="w-[58%] h-[58%] text-white" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l2.9 6.2 6.8.8-5 4.7 1.3 6.7L12 17l-6 3.4 1.3-6.7-5-4.7 6.8-.8z"></path>
+                        </svg>
+                    </div>
 
-                    <span class="text-[clamp(10px,2vmin,20px)] truncate">
+                    <span class="text-[clamp(10px,2.5vmin,26px)] tracking-wide truncate">
                         Playlist cliente
                     </span>
                 </div>
             </div>
 
-            <div class="space-y-[clamp(5px,1vmin,10px)] min-w-0">
-                <div class="h-[clamp(34px,6vmin,54px)]
-                    px-[clamp(10px,2.5vmin,22px)]
-                    rounded-[clamp(10px,1.5vmin,16px)]
-                    bg-white/10 border border-white/10
-                    flex items-center gap-[clamp(8px,1.5vmin,16px)] min-w-0">
+            {{-- DESTRA --}}
+            <div class="flex flex-col gap-[clamp(6px,1.2vmin,12px)] min-w-0">
 
-                    <span class="shrink-0">▣</span>
+                <div class="h-[clamp(34px,7vmin,70px)]
+                    px-[clamp(10px,3vmin,32px)]
+                    rounded-[clamp(10px,2vmin,22px)]
+                    bg-white/[0.055] border border-white/10 backdrop-blur-xl
+                    flex items-center gap-[clamp(8px,2vmin,24px)] shadow-xl min-w-0">
 
-                    <span class="text-[clamp(10px,2vmin,20px)] truncate">
+                    <svg class="w-[clamp(20px,4vmin,36px)] h-[clamp(20px,4vmin,36px)] text-white shrink-0"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        <path d="M8 21h8"></path>
+                    </svg>
+
+                    <span class="text-[clamp(9px,2.2vmin,24px)] tracking-wide truncate">
                         Codice dispositivo: {{ $deviceCode ?? 'DEVICE-XXXX-XXXX' }}
                     </span>
                 </div>
 
-                <div class="h-[clamp(34px,6vmin,54px)]
-                    px-[clamp(10px,2.5vmin,22px)]
-                    rounded-[clamp(10px,1.5vmin,16px)]
-                    bg-white/10 border border-white/10
-                    flex items-center gap-[clamp(8px,1.5vmin,16px)] min-w-0">
+                <div class="h-[clamp(34px,7vmin,70px)]
+                    px-[clamp(10px,3vmin,32px)]
+                    rounded-[clamp(10px,2vmin,22px)]
+                    bg-white/[0.055] border border-white/10 backdrop-blur-xl
+                    flex items-center gap-[clamp(8px,2vmin,24px)] shadow-xl min-w-0">
 
-                    <span class="shrink-0">🌐</span>
+                    <svg class="w-[clamp(20px,4vmin,36px)] h-[clamp(20px,4vmin,36px)] text-white shrink-0"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M2 12h20"></path>
+                        <path d="M12 2a15 15 0 0 1 0 20"></path>
+                        <path d="M12 2a15 15 0 0 0 0 20"></path>
+                    </svg>
 
-                    <span class="text-[clamp(10px,2vmin,20px)] truncate">
-                        Sito web: {{ request()->getHost() }}
+                    <span class="text-[clamp(9px,2.2vmin,24px)] tracking-wide truncate">
+                        Sito web: {{ request()->getHost() ?: 'webappiptv.local' }}
                     </span>
                 </div>
             </div>
