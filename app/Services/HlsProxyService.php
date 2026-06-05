@@ -151,14 +151,14 @@ class HlsProxyService
             '-user_agent',
             'VLC/3.0.18 LibVLC/3.0.18',
 
-            '-fflags',
+           '-fflags',
             '+genpts+discardcorrupt',
 
             '-analyzeduration',
-            '3000000',
+            '10000000',
 
             '-probesize',
-            '3000000',
+            '10000000',
 
             '-i',
             $channel->stream_url,
@@ -170,11 +170,12 @@ class HlsProxyService
             '0:a:0?',
 
             /*
-             * Conversione HEVC/H.265 -> H.264 720p.
-             * Più leggera del 1080p e compatibile con browser.
-             */
+            * MODALITÀ STABILE LEGGERA:
+            * Ricodifica il video ma a 480p, molto più leggero del vecchio 720p.
+            * Serve perché con -c:v copy alcuni stream si bloccano dopo pochi secondi.
+            */
             '-vf',
-            'scale=-2:720',
+            'scale=-2:480,fps=25',
 
             '-c:v',
             'libx264',
@@ -186,35 +187,46 @@ class HlsProxyService
             'zerolatency',
 
             '-profile:v',
-            'main',
+            'baseline',
 
             '-level',
-            '3.1',
+            '3.0',
 
             '-pix_fmt',
             'yuv420p',
 
             '-crf',
-            '30',
+            '34',
 
             '-maxrate',
-            '2500k',
+            '900k',
 
             '-bufsize',
-            '5000k',
+            '1800k',
 
             '-g',
-            '50',
+            '100',
 
             '-keyint_min',
-            '50',
+            '100',
 
             '-sc_threshold',
             '0',
 
+            /*
+            * Limita l'uso CPU.
+            * Se ancora rallenta troppo, prova 1.
+            * Se invece scatta, prova 3 o togli proprio questa riga.
+            */
+            '-threads',
+            '2',
+
             '-max_muxing_queue_size',
             '2048',
 
+            /*
+            * Audio sempre convertito in AAC.
+            */
             '-c:a',
             'aac',
 
@@ -227,17 +239,20 @@ class HlsProxyService
             '-ar',
             '44100',
 
+            '-af',
+            'aresample=async=1:first_pts=0',
+
             '-f',
             'hls',
 
             '-hls_time',
-            '2',
+            '4',
 
             '-hls_list_size',
-            '5',
+            '6',
 
             '-hls_flags',
-            'delete_segments+append_list+omit_endlist+independent_segments',
+            'delete_segments+omit_endlist+independent_segments',
 
             '-hls_segment_type',
             'mpegts',

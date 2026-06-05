@@ -1114,7 +1114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('iptv-video');
     const formatLabel = document.getElementById('player-format');
     const streamUrl = @json($playableChannel->stream_url);
-
+    
     if (!video || !streamUrl) {
         return;
     }
