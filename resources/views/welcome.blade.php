@@ -222,7 +222,7 @@
                 </a>
 
                 {{-- IMPOSTAZIONI --}}
-                <a href="{{ url('/cliente/dispositivo') }}"
+                <a href="{{ route('customer.settings.index') }}"
                    class="rounded-[clamp(10px,2vmin,22px)]
                    px-[clamp(10px,3vmin,48px)]
                    flex items-center justify-center gap-[clamp(8px,2vmin,28px)]

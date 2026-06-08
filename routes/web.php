@@ -39,6 +39,10 @@ Route::prefix('cliente')->name('customer.')->group(function () {
     
     Route::get('/tv-player', [TvPlayerController::class, 'index'])
         ->name('tv-player');
+
+    Route::get('/settings', function () {
+        return view('customer.settings.index');
+    })->name('settings.index');
 });
 
 
